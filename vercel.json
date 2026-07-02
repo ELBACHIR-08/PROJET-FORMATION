@@ -4,11 +4,13 @@
   "builds": [
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "index.css", "use": "@vercel/static" },
-    { "src": "index.js", "use": "@vercel/static" }
+    { "src": "index.js", "use": "@vercel/static" },
+    { "src": "logo.png", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/index.css", "dest": "/index.css" },
     { "src": "/index.js", "dest": "/index.js" },
+    { "src": "/logo.png", "dest": "/logo.png" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
