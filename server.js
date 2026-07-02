@@ -7,7 +7,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
 
 const MIME_TYPES = {
@@ -49,7 +49,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, '127.0.0.1', () => {
+server.listen(PORT, () => {
   console.log('\x1b[32m%s\x1b[0m', '✔ Serveur de développement démarré !');
   console.log(`\x1b[36m%s\x1b[0m`, `  ➜  Local:   http://localhost:${PORT}/`);
   console.log('\nAppuyez sur Ctrl+C pour arrêter.\n');
