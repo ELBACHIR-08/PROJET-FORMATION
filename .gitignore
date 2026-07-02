@@ -1,0 +1,28 @@
+# Dépendances Node
+node_modules/
+node-portable/
+node-extracted/
+
+# Archives
+*.zip
+
+# Environnement local
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Éditeurs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

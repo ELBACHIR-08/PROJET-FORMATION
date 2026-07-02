@@ -1,0 +1,13 @@
+{
+  "name": "digital-virgo-kms-coming-soon",
+  "version": "1.0.0",
+  "description": "Digital Virgo KMS - Coming Soon Page",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "keywords": ["digital-virgo", "kms", "coming-soon"],
+  "author": "Digital Virgo",
+  "license": "UNLICENSED",
+  "private": true
+}
