@@ -1,32 +1,25 @@
 /**
  * Digital Virgo KMS – Coming Soon Page
- * Handles countdown timer, form validation and waitlist submission to Supabase.
+ * Handles countdown timer, form validation and waitlist submission.
+ *
+ * Supabase credentials are NEVER exposed here — all API calls go through
+ * the server-side proxy at /api/waitlist (Vercel Serverless Function).
  */
 
-// ─── Supabase Configuration ────────────────────────────────────────────────
-const SUPABASE_URL = 'https://eeqhmfkqjdlrscgekjha.supabase.co';
-const SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlcWhtZmtxamRscnNjZ2VramhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyODM1NTAsImV4cCI6MjA5ODg1OTU1MH0.RB1Bgs5AUAMDtOVRvMx7N_1JGW8LQZ6LvQ6c2uItguM';
-
 /**
- * Inserts a new row into the public.waitlist table via Supabase REST API.
+ * Sends signup data to the server-side /api/waitlist proxy.
  * @param {string} fullname
  * @param {string} email
  * @returns {Promise<{ok: boolean, duplicate: boolean}>}
  */
 async function saveToWaitlist(fullname, email) {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
+  const response = await fetch('/api/waitlist', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      Prefer: 'return=minimal',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ fullname, email }),
   });
 
-  // 409 Conflict = duplicate email — treat as already registered (success path)
+  // 409 Conflict = email already registered — idempotent success
   if (response.status === 409) {
     return { ok: true, duplicate: true };
   }
