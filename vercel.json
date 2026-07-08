@@ -3,16 +3,13 @@
   "cleanUrls": true,
   "builds": [
     { "src": "api/waitlist.js", "use": "@vercel/node" },
-    { "src": "index.html", "use": "@vercel/static" },
-    { "src": "index.css",  "use": "@vercel/static" },
-    { "src": "index.js",   "use": "@vercel/static" },
-    { "src": "logo.png",   "use": "@vercel/static" }
+    { "src": "**/*.html", "use": "@vercel/static" },
+    { "src": "**/*.css", "use": "@vercel/static" },
+    { "src": "**/*.js", "use": "@vercel/static" },
+    { "src": "**/*.png", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/waitlist", "dest": "/api/waitlist.js" },
-    { "src": "/index.css",   "dest": "/index.css" },
-    { "src": "/index.js",    "dest": "/index.js" },
-    { "src": "/logo.png",    "dest": "/logo.png" },
-    { "src": "/(.*)",        "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
