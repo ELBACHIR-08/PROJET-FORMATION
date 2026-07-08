@@ -144,7 +144,7 @@
           
           <!-- Chat input area -->
           <div style="padding: 1.25rem; border-top: 1px solid var(--border); background: var(--background);">
-            <form id="bot-chat-form" style="display: flex; gap: 0.75rem;">
+            <form id="bot-chat-form" onsubmit="event.preventDefault();" style="display: flex; gap: 0.75rem;">
               <input type="text" id="bot-chat-input" placeholder="Demandez une définition ou une procédure..." style="flex: 1; padding: 0.85rem 1.25rem; border-radius: 24px; border: 1px solid var(--border); background: var(--card); color: var(--foreground); outline: none; font-size: 0.95rem;">
               <button type="submit" style="width: 46px; height: 46px; border-radius: 50%; background: var(--primary); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.2s;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
