@@ -3,129 +3,306 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Digital Virgo KMS - Bientôt disponible</title>
-  <meta name="description" content="Optimisez votre savoir avec notre KMS de nouvelle génération. Inscrivez-vous pour l'accès anticipé et centralisez l'intelligence de votre entreprise.">
+  <title>Système de Gestion des Connaissances - Digital Virgo</title>
   
-  <!-- Google Fonts: Inter for modern, clean sans-serif typography -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="index.css?v=2">
+  <link rel="stylesheet" href="parcours.css?v=1">
+  
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <!-- Header with Brand Logo and Social Links -->
-  <header class="main-header">
-    <div class="header-container">
-      <div class="logo-wrapper">
-        <img class="brand-logo" src="logo.png" alt="Digital Virgo Logo">
-      </div>
-      
-      <!-- Social Networks Links -->
-      <nav class="social-nav" aria-label="Réseaux sociaux">
-        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-          </svg>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="logo.png" alt="Digital Virgo Logo" class="sidebar-logo">
+    </div>
+    
+    <div class="sidebar-menu-group">
+      <h3 class="menu-heading">VERTICALES</h3>
+      <nav class="sidebar-nav" id="sidebar-verticals">
+        <a href="#" class="nav-item active" data-vertical="LIVE">
+          <div class="nav-icon-container">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          </div>
+          Live
         </a>
-        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Twitter">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-          </svg>
+        <a href="#" class="nav-item" data-vertical="LOYALTY">
+          <div class="nav-icon-container">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+          </div>
+          Loyalty
         </a>
-        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/>
-          </svg>
+        <a href="#" class="nav-item" data-vertical="CONTENT">
+          <div class="nav-icon-container">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
+          Content
+        </a>
+        <a href="#" class="nav-item" data-vertical="PASS">
+          <div class="nav-icon-container">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          Pass
         </a>
       </nav>
     </div>
-  </header>
 
-  <!-- Main Hero Area -->
-  <main class="hero-section">
-    <div class="hero-container">
-      
-      <!-- Left Column: Title, Description, and Countdown -->
-      <section class="hero-content">
-        <span class="badge">BIENTÔT DISPONIBLE</span>
-        <h1 class="main-title">Optimisez votre savoir avec notre KMS</h1>
-        
-        <p class="description">
-          Notre système de gestion des connaissances de nouvelle génération arrive bientôt. 
-          Conçu pour centraliser, structurer et accélérer l'accès à l'intelligence de votre entreprise 
-          avec une précision absolue.
-        </p>
-        
-        <!-- Countdown Timer -->
-        <div class="countdown-wrapper" aria-label="Compte à rebours jusqu'au lancement">
-          <div class="countdown-card">
-            <span class="number" id="days">00</span>
-          </div>
-          <div class="countdown-card">
-            <span class="number" id="hours">00</span>
-          </div>
-          <div class="countdown-card">
-            <span class="number" id="minutes">00</span>
-          </div>
-          <div class="countdown-card highlighted">
-            <span class="number" id="seconds">00</span>
-          </div>
-        </div>
-      </section>
-      
-      <!-- Right Column: Registration Card -->
-      <section class="form-container">
-        <div class="form-card">
-          <h2 class="card-title">Accès Anticipé</h2>
-          <p class="card-description">
-            Inscrivez-vous pour être parmi les premiers à découvrir notre nouvelle plateforme.
-          </p>
-          
-          <form id="early-access-form" novalidate>
-            <div class="input-group">
-              <label for="fullname">Nom complet</label>
-              <input type="text" id="fullname" name="fullname" placeholder="Jean Dupont" required autocomplete="name">
-              <span class="error-message" id="fullname-error" aria-live="polite"></span>
-            </div>
-            
-            <div class="input-group">
-              <label for="email">Adresse e-mail professionnelle</label>
-              <input type="email" id="email" name="email" placeholder="jean.dupont@entreprise.com" required autocomplete="email">
-              <span class="error-message" id="email-error" aria-live="polite"></span>
-            </div>
-            
-            <button type="submit" class="btn-submit" id="btn-submit">
-              <span>REJOINDRE LA LISTE D'ATTENTE</span>
-              <svg class="btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 8H15M15 8L8 1M15 8L8 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            
-            <p class="legal-text">
-              En rejoignant la liste, vous acceptez notre <a href="#" class="legal-link">Politique de confidentialité</a>.
-            </p>
-          </form>
-          
-          <!-- Success message state (hidden initially) -->
-          <div class="success-message" id="success-message" aria-hidden="true" style="display: none;">
-            <div class="success-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-            </div>
-            <h3>Inscription Réussie !</h3>
-            <p>Merci pour votre intérêt. Vous recevrez très bientôt une invitation exclusive pour tester la plateforme en avant-première.</p>
-          </div>
-        </div>
-      </section>
-      
+    <div class="sidebar-user" id="btn-open-profile" style="cursor: pointer; transition: background 0.2s; border-radius: 8px;" onmouseover="this.style.background='rgba(0,0,0,0.03)'" onmouseout="this.style.background='transparent'">
+      <div class="user-avatar" id="sidebar-user-avatar">JD</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebar-user-name">Jean Dupont</span>
+        <span class="user-role" id="sidebar-user-role">ADMIN KMS</span>
+      </div>
+      <div style="margin-left: auto; color: var(--muted-foreground);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </div>
     </div>
-  </main>
-  
-  <!-- JavaScript Script -->
-  <script src="index.js"></script>
+  </aside>
+
+  <!-- Main Content Layout -->
+  <div class="main-layout">
+    
+    <!-- Top Header -->
+    <header class="top-header" style="flex-direction: column; align-items: stretch; padding: 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem;">
+        <h1 class="page-title">Système de Gestion des Connaissances</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" id="btn-logout" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; background-color: var(--destructive); color: white;">Se déconnecter</button>
+        </div>
+      </div>
+      <!-- Header Tabs (Formats) -->
+      <div class="header-tabs" id="header-formats" style="display: flex; gap: 2rem; padding: 0 2rem; border-bottom: 1px solid var(--border); margin-top: -0.5rem;">
+        <button class="format-tab" data-format="WIKI" style="padding: 0.5rem 0; font-weight: 600; color: var(--muted-foreground); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer;">WIKI</button>
+        <button class="format-tab" data-format="CHECKLIST" style="padding: 0.5rem 0; font-weight: 600; color: var(--muted-foreground); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer;">CHECKLIST</button>
+        <button class="format-tab" data-format="PLAYBOOK" style="padding: 0.5rem 0; font-weight: 600; color: var(--muted-foreground); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer;">PLAYBOOK</button>
+        <button class="format-tab active" data-format="PARCOURS_CLIENT" style="padding: 0.5rem 0; font-weight: 600; color: var(--foreground); background: transparent; border: none; border-bottom: 2px solid var(--primary); cursor: pointer;">PARCOURS CLIENT</button>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="content-area">
+      <!-- View 0: Operator Choice -->
+      <div id="operator-view" style="padding-top: 1rem; display: none;">
+        <div style="margin-bottom: 2rem; text-align: center;">
+          <h2 class="section-title">Choix de l'opérateur</h2>
+          <p class="section-subtitle" style="color: var(--muted-foreground);">Sélectionnez l'opérateur pour configurer ses services.</p>
+        </div>
+        
+        <div class="operators-grid" id="operators-grid">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <!-- View 1: Dashboard (Content Grid) -->
+      <div id="dashboard-view" style="padding-top: 1rem; display: none;">
+        <div style="margin-bottom: 2rem; display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;">
+          <button id="btn-back-operator" style="background: transparent; border: 1px solid var(--border); color: var(--foreground); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 500;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Retour aux opérateurs
+          </button>
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div>
+              <h2 class="section-title" id="grid-title">Services disponibles</h2>
+              <p class="section-subtitle" style="color: var(--muted-foreground);" id="grid-subtitle">Sélectionnez un service pour configurer ses captures d'acquisition.</p>
+            </div>
+            <!-- WIKI action buttons -->
+            <div id="wiki-actions" style="display: none; gap: 0.5rem;">
+              <button id="btn-create-wiki" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                Alimenter le Bot (PDF/Texte)
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Standard Grid for Services -->
+        <div class="features-grid" id="services-grid">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+        <!-- Chatbot Interface for WIKI -->
+        <div id="wiki-bot-container" style="display: none; flex-direction: column; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); height: 600px; max-height: 70vh; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+          <!-- Chat messages area -->
+          <div id="bot-messages" style="flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Initial bot message -->
+            <div style="display: flex; gap: 1rem; align-items: flex-start; max-width: 85%;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+              </div>
+              <div style="background: var(--muted); padding: 1rem 1.25rem; border-radius: 12px; border-top-left-radius: 2px; color: var(--foreground); font-size: 0.95rem; line-height: 1.5;">
+                Bonjour ! Je suis l'assistant IA de la base de connaissances. Posez-moi vos questions sur nos procédures, architectures, ou terminologies.
+              </div>
+            </div>
+          </div>
+          
+          <!-- Chat input area -->
+          <div style="padding: 1.25rem; border-top: 1px solid var(--border); background: var(--background);">
+            <form id="bot-chat-form" style="display: flex; gap: 0.75rem;">
+              <input type="text" id="bot-chat-input" placeholder="Demandez une définition ou une procédure..." style="flex: 1; padding: 0.85rem 1.25rem; border-radius: 24px; border: 1px solid var(--border); background: var(--card); color: var(--foreground); outline: none; font-size: 0.95rem;">
+              <button type="submit" style="width: 46px; height: 46px; border-radius: 50%; background: var(--primary); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.2s;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- View 2: Parcours Client (Acquisition Flows) -->
+      <div id="parcours-view" style="display: none;">
+        
+        <!-- Parcours Hero Header -->
+        <div class="parcours-hero">
+          <div class="parcours-hero-bg"></div>
+          <div class="parcours-hero-content">
+            <button id="btn-back-dashboard" class="btn-back-hero">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              Retour
+            </button>
+            <div class="parcours-hero-badges">
+              <span class="phr-badge phr-badge--format">PARCOURS CLIENT</span>
+              <span class="phr-badge phr-badge--vertical" id="parcours-vertical">PASS</span>
+            </div>
+            <h1 class="parcours-hero-title" id="parcours-title-text">Flux d'Acquisition</h1>
+            <p class="parcours-hero-desc" id="parcours-desc-text">Cartographie complète du parcours utilisateur</p>
+            <div class="parcours-flow-toggle" id="flow-toggle-container">
+              <!-- Toggle boutons générés par JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Flow Content Area -->
+        <div class="parcours-flow-area" id="parcours-content-container">
+          <!-- Généré dynamiquement par JS -->
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="footer-left">
+        <strong>Digital<br>Virgo</strong>
+        <span class="copyright">© 2024 Digital Virgo. All rights reserved.</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Politique de Confidentialité</a>
+        <a href="#">Conditions d'Utilisation</a>
+        <a href="#">Contact</a>
+      </div>
+    </footer>
+    
+  </div>
+
+  <!-- Env vars -->
+  <script src="/env.js"></script>
+  <!-- Data (mock) -->
+  <script src="/data/services.js"></script>
+  <!-- Main logic -->
+  <script src="index.js?v=2"></script>
+
+  <!-- Profile Settings Modal -->
+  <div class="modal-overlay" id="profile-modal" style="display: none;">
+    <div class="modal-container">
+      <button class="modal-close" id="btn-close-profile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <h2 class="section-title" style="margin-bottom: 0.5rem;">Mon Profil</h2>
+      <p class="section-subtitle" style="margin-bottom: 2rem;">Mettez à jour vos informations personnelles.</p>
+
+      <div id="profile-error" class="login-error-msg" style="display: none; background-color: oklch(0.97 0.01 10); color: var(--destructive); padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid oklch(0.9 0.05 10);"></div>
+
+      <form id="profile-form">
+        <!-- Avatar Upload -->
+        <div class="avatar-upload-container" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; border: 1px dashed var(--border); border-radius: var(--radius); background: var(--background);">
+          <div class="avatar-preview" id="profile-avatar-preview" style="width: 60px; height: 60px; border-radius: 50%; background: var(--muted); display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); overflow: hidden; border: 2px solid var(--primary);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </div>
+          <div class="avatar-upload-action" style="flex: 1;">
+            <label for="profile-avatar" class="btn" style="background: var(--secondary); color: var(--secondary-foreground); border: 1px solid var(--border); padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 6px; cursor: pointer; display: inline-block;">Modifier la photo</label>
+            <input type="file" id="profile-avatar" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="profile-fullname" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Nom complet</label>
+          <input type="text" id="profile-fullname" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 2rem;">
+          <label for="profile-job" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Poste (Job Title)</label>
+          <input type="text" id="profile-job" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit;">
+        </div>
+        
+        <button type="submit" id="btn-save-profile" class="btn btn-primary" style="width: 100%;">Enregistrer les modifications</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Wiki Modal -->
+  <div class="modal-overlay" id="wiki-create-modal" style="display: none;">
+    <div class="modal-container" style="max-width: 700px;">
+      <button class="modal-close" id="btn-close-wiki-create"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <h2 class="section-title" style="margin-bottom: 0.5rem;">Créer un Article Wiki</h2>
+      <p class="section-subtitle" style="margin-bottom: 2rem;">Ajoutez une définition, une terminologie ou un document métier.</p>
+
+      <div id="wiki-create-error" class="login-error-msg" style="display: none; background-color: oklch(0.97 0.01 10); color: var(--destructive); padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid oklch(0.9 0.05 10);"></div>
+
+      <form id="wiki-create-form">
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="wiki-title" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Titre de l'article</label>
+          <input type="text" id="wiki-title" required placeholder="Ex: Lexique de facturation" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="wiki-content" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Contenu (Texte libre, définitions...)</label>
+          <textarea id="wiki-content" required rows="6" placeholder="Saisissez le contenu de l'article ici..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit; resize: vertical;"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 2rem;">
+          <label for="wiki-file" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Pièce jointe (Optionnel - PDF, Word, Image)</label>
+          <input type="file" id="wiki-file" style="width: 100%; padding: 0.75rem; border: 1px dashed var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit; cursor: pointer;">
+        </div>
+        
+        <button type="submit" id="btn-save-wiki" class="btn btn-primary" style="width: 100%;">Publier l'article Wiki</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Wiki Reader Modal -->
+  <div class="modal-overlay" id="wiki-reader-modal" style="display: none; align-items: flex-start; overflow-y: auto; padding: 2rem 0;">
+    <div class="modal-container" style="max-width: 800px; margin: auto; animation: slideUp 0.3s ease-out; padding: 3rem;">
+      <button class="modal-close" id="btn-close-wiki-read" style="top: 1.5rem; right: 1.5rem;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      
+      <div style="margin-bottom: 2rem;">
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+          <span class="phr-badge phr-badge--format">WIKI</span>
+          <span class="phr-badge phr-badge--vertical" id="wiki-read-vertical">LIVE</span>
+        </div>
+        <h1 id="wiki-read-title" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--foreground);">Titre de l'article</h1>
+        <div style="font-size: 0.85rem; color: var(--muted-foreground); display: flex; align-items: center; gap: 0.5rem;">
+          <span id="wiki-read-author">Auteur inconnu</span> • <span id="wiki-read-date">01/01/2026</span>
+        </div>
+      </div>
+
+      <div id="wiki-read-content" style="font-size: 1rem; line-height: 1.7; color: var(--foreground); white-space: pre-wrap; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);">
+        <!-- Content will be injected here -->
+      </div>
+
+      <div id="wiki-read-attachment-container" style="display: none;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--foreground);">Pièce jointe</h3>
+        <a id="wiki-read-attachment-btn" href="#" target="_blank" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Télécharger le document
+        </a>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

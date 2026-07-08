@@ -10,6 +10,20 @@ const path = require('path');
 const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
 
+// Simple .env parser to avoid external dependencies
+let envConfig = {};
+try {
+  const envFile = fs.readFileSync(path.join(ROOT, '.env'), 'utf-8');
+  envFile.split('\n').forEach(line => {
+    const match = line.match(/^([^=]+)=(.*)$/);
+    if (match) {
+      envConfig[match[1].trim()] = match[2].trim();
+    }
+  });
+} catch (e) {
+  console.warn("Could not read .env file");
+}
+
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css':  'text/css; charset=utf-8',
@@ -29,6 +43,19 @@ const server = http.createServer((req, res) => {
   let urlPath = req.url.split('?')[0]; // strip query params
   if (urlPath === '/') urlPath = '/index.html';
 
+  if (urlPath === '/env.js') {
+    res.writeHead(200, {
+      'Content-Type': 'application/javascript; charset=utf-8',
+      'Cache-Control': 'no-cache'
+    });
+    const envVars = {
+      SUPABASE_URL: envConfig.SUPABASE_URL,
+      SUPABASE_ANON_KEY: envConfig.SUPABASE_ANON_KEY
+    };
+    res.end(`window.ENV = ${JSON.stringify(envVars)};`);
+    return;
+  }
+
   const filePath = path.join(ROOT, urlPath);
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
@@ -44,7 +71,12 @@ const server = http.createServer((req, res) => {
       }
       return;
     }
-    res.writeHead(200, { 'Content-Type': contentType });
+    res.writeHead(200, { 
+      'Content-Type': contentType,
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
     res.end(data);
   });
 });

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - KMS Digital Virgo</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="index.css?v=2">
+  <link rel="stylesheet" href="login.css?v=1">
+  
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="login-body">
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="login-logo-placeholder">
+        <!-- Logo Digital Virgo -->
+        <strong>Digital Virgo</strong>
+      </div>
+      <h2>Système de Gestion des Connaissances</h2>
+    </div>
+
+    <div class="login-card">
+      <div class="login-tabs">
+        <button class="login-tab active" data-tab="login">Connexion</button>
+        <button class="login-tab" data-tab="register">S'inscrire</button>
+      </div>
+
+      <!-- Connexion Form -->
+      <div id="view-login" class="login-view active">
+        <h3 class="login-title">Bon retour !</h3>
+        <p class="login-desc">Accédez à l'intelligence opérationnelle.</p>
+
+        <div id="login-error" class="login-error-msg" style="display: none;"></div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Adresse Email</label>
+            <input type="email" id="email" required placeholder="nom@digitalvirgo.com">
+          </div>
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" required placeholder="••••••••">
+          </div>
+          <button type="submit" id="btn-login" class="btn btn-primary btn-block">Se connecter</button>
+        </form>
+      </div>
+
+      <!-- Inscription Form -->
+      <div id="view-register" class="login-view" style="display: none;">
+        <h3 class="login-title">Créer un compte</h3>
+        <p class="login-desc">Rejoignez la plateforme KMS.</p>
+
+        <div id="register-error" class="login-error-msg" style="display: none;"></div>
+
+        <form id="register-form">
+          <!-- Avatar Upload -->
+          <div class="avatar-upload-container">
+            <div class="avatar-preview" id="avatar-preview">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <div class="avatar-upload-action">
+              <label for="avatar" class="avatar-upload-btn">Choisir une photo</label>
+              <input type="file" id="avatar" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-fullname">Nom complet</label>
+            <input type="text" id="reg-fullname" required placeholder="Jean Dupont">
+          </div>
+
+          <div class="form-group">
+            <label for="reg-job">Poste (Job Title)</label>
+            <input type="text" id="reg-job" required placeholder="Product Manager">
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-email">Adresse Email</label>
+            <input type="email" id="reg-email" required placeholder="nom@digitalvirgo.com">
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Mot de passe</label>
+            <input type="password" id="reg-password" required placeholder="••••••••" minlength="6">
+          </div>
+          
+          <button type="submit" id="btn-register" class="btn btn-primary btn-block">Créer mon compte</button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="login-footer">
+      <p>Un problème de connexion ? <a href="#">Contactez le support IT</a></p>
+    </div>
+  </div>
+
+  <!-- Env vars -->
+  <script src="/env.js"></script>
+  <!-- Login Logic -->
+  <script src="login.js"></script>
+</body>
+</html>

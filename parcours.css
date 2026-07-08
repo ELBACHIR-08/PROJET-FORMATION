@@ -1,0 +1,740 @@
+/* ============================================================
+   PARCOURS CLIENT — Design Immersif & Mockups Téléphone
+   ============================================================ */
+
+/* ---- Step Header Intégré dans Phone Card ---- */
+.phone-step-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.phone-step-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.wifi-theme .phone-step-badge {
+  background: oklch(0.488 0.243 264.376 / 0.12);
+  color: oklch(0.488 0.243 264.376);
+  border: 2px solid oklch(0.488 0.243 264.376 / 0.3);
+  box-shadow: 0 0 0 4px oklch(0.488 0.243 264.376 / 0.06);
+}
+
+.fourg-theme .phone-step-badge {
+  background: oklch(0.523 0.265 3.32 / 0.12);
+  color: oklch(0.523 0.265 3.32);
+  border: 2px solid oklch(0.523 0.265 3.32 / 0.3);
+  box-shadow: 0 0 0 4px oklch(0.523 0.265 3.32 / 0.06);
+}
+
+.phone-step-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--foreground);
+  text-align: center;
+  line-height: 1.3;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* ---- Hero Header ---- */
+.parcours-hero {
+  position: relative;
+  margin: -2rem -2.5rem 0;
+  padding: 3rem 2.5rem 4rem;
+  overflow: hidden;
+  background: linear-gradient(135deg,
+    oklch(0.124 0.046 273.7) 0%,
+    oklch(0.18 0.06 280) 40%,
+    oklch(0.15 0.04 300) 70%,
+    oklch(0.12 0.08 0) 100%
+  );
+}
+
+.parcours-hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 50%, oklch(0.523 0.265 3.32 / 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, oklch(0.488 0.243 264.376 / 0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.parcours-hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 1px 1px, oklch(1 0 0 / 0.04) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+.parcours-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+}
+
+.btn-back-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: oklch(1 0 0 / 0.08);
+  color: oklch(1 0 0 / 0.7);
+  border: 1px solid oklch(1 0 0 / 0.12);
+  padding: 0.4rem 0.85rem;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-back-hero:hover {
+  background: oklch(1 0 0 / 0.15);
+  color: white;
+}
+
+.parcours-hero-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.phr-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.phr-badge--format {
+  background: oklch(1 0 0 / 0.1);
+  color: oklch(1 0 0 / 0.7);
+  border: 1px solid oklch(1 0 0 / 0.15);
+}
+
+.phr-badge--vertical {
+  background: oklch(0.523 0.265 3.32 / 0.25);
+  color: oklch(0.9 0.08 10);
+  border: 1px solid oklch(0.523 0.265 3.32 / 0.4);
+}
+
+.parcours-hero-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.parcours-hero-desc {
+  font-size: 1rem;
+  color: oklch(1 0 0 / 0.55);
+  margin: 0 0 2rem;
+  max-width: 500px;
+}
+
+/* ---- Flow Toggle (Wi-Fi / 4G) ---- */
+.parcours-flow-toggle {
+  display: inline-flex;
+  background: oklch(1 0 0 / 0.08);
+  border: 1px solid oklch(1 0 0 / 0.12);
+  border-radius: 100px;
+  padding: 0.25rem;
+  gap: 0.2rem;
+}
+
+.flow-toggle-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: oklch(1 0 0 / 0.5);
+  background: transparent;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.flow-toggle-btn.active {
+  background: white;
+  color: oklch(0.124 0.046 273.7);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.flow-toggle-btn .toggle-icon {
+  font-size: 1rem;
+}
+
+/* ---- Flow Area ---- */
+.parcours-flow-area {
+  padding: 2.5rem 0;
+  margin-top: -2rem;
+}
+
+/* ---- Flow Container ---- */
+.flow-container {
+  display: none;
+  animation: flowIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.flow-container.active {
+  display: block;
+}
+
+@keyframes flowIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Steps Progress Bar ---- */
+.steps-track {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0;
+  margin-bottom: 2rem;
+  padding: 0.5rem 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.steps-track::-webkit-scrollbar { display: none; }
+
+.step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 180px;
+}
+
+.step-node-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 2px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.step-node-circle.wifi-active {
+  background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.4 0.2 280));
+  border-color: oklch(0.488 0.243 264.376);
+  color: white;
+  box-shadow: 0 0 0 4px oklch(0.488 0.243 264.376 / 0.15);
+}
+
+.step-node-circle.fourg-active {
+  background: linear-gradient(135deg, oklch(0.523 0.265 3.32), oklch(0.45 0.2 15));
+  border-color: oklch(0.523 0.265 3.32);
+  color: white;
+  box-shadow: 0 0 0 4px oklch(0.523 0.265 3.32 / 0.15);
+}
+
+.step-node-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  margin-top: 0.5rem;
+  text-align: center;
+  max-width: 90px;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.step-connector-line {
+  flex: 0 0 0px;
+  width: 0;
+  display: none;
+}
+
+.step-connector-line.wifi-theme::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, oklch(0.488 0.243 264.376), oklch(0.6 0.2 264));
+  animation: lineSlide 2s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.step-connector-line.fourg-theme::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, oklch(0.523 0.265 3.32), oklch(0.7 0.15 3));
+  animation: lineSlide 2s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes lineSlide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ---- Phone Mockups Grid ---- */
+.mockups-grid {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 2rem 1.5rem 0.5rem; /* padding-right large pour la derniere card */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mockups-grid::-webkit-scrollbar {
+  height: 6px;
+}
+
+.mockups-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mockups-grid::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+/* ---- Phone Mockup Frame ---- */
+.phone-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  flex: 0 0 180px;
+  width: 180px;
+  animation: phoneAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.mockups-grid::after {
+  content: "";
+  display: block;
+  flex: 0 0 2rem;
+  width: 2rem;
+  height: 10px;
+}
+
+.phone-card:nth-child(1) { animation-delay: 0.05s; }
+.phone-card:nth-child(2) { animation-delay: 0.10s; }
+.phone-card:nth-child(3) { animation-delay: 0.15s; }
+.phone-card:nth-child(4) { animation-delay: 0.20s; }
+
+@keyframes phoneAppear {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.phone-step-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.phone-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.wifi-theme .phone-step-num {
+  background: oklch(0.488 0.243 264.376 / 0.15);
+  color: oklch(0.488 0.243 264.376);
+  border: 1.5px solid oklch(0.488 0.243 264.376 / 0.3);
+}
+
+.fourg-theme .phone-step-num {
+  background: oklch(0.523 0.265 3.32 / 0.15);
+  color: oklch(0.523 0.265 3.32);
+  border: 1.5px solid oklch(0.523 0.265 3.32 / 0.3);
+}
+
+.phone-step-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--foreground);
+  text-align: left;
+}
+
+/* ---- Phone Frame (CSS) ---- */
+.phone-frame-wrapper {
+  position: relative;
+  width: 160px;
+}
+
+.phone-frame {
+  width: 160px;
+  height: 320px;
+  border-radius: 28px;
+  background: linear-gradient(160deg, #2a2a35 0%, #1a1a25 60%, #111118 100%);
+  box-shadow:
+    0 0 0 1.5px #3a3a4a,
+    0 0 0 2.5px #222230,
+    0 12px 40px rgba(0,0,0,0.35),
+    0 4px 12px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.phone-frame:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 0 0 1.5px #4a4a5a,
+    0 0 0 2.5px #222230,
+    0 20px 60px rgba(0,0,0,0.4),
+    0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* Phone side buttons */
+.phone-frame::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 60px;
+  width: 3px;
+  height: 22px;
+  background: #2a2a35;
+  border-radius: 2px 0 0 2px;
+  box-shadow: 0 28px 0 #2a2a35;
+}
+
+.phone-frame::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 80px;
+  width: 3px;
+  height: 44px;
+  background: #2a2a35;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Notch */
+.phone-notch {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 14px;
+  background: #0d0d12;
+  border-radius: 0 0 12px 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.phone-notch-cam {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1a1a25;
+  box-shadow: inset 0 0 0 1.5px #2a3a4a;
+}
+
+/* Phone screen */
+.phone-screen {
+  position: absolute;
+  inset: 6px;
+  border-radius: 22px;
+  background: #0d0d18;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Screen reflection */
+.phone-screen::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 20;
+  border-radius: 50%;
+  transform: rotate(-30deg);
+}
+
+.phone-screen-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+  z-index: 1;
+  border-radius: 20px;
+  transition: opacity 0.4s ease;
+  animation: imageReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes imageReveal {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Upload Zone (inside screen) */
+.phone-upload-zone {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  border: 1.5px dashed rgba(255,255,255,0.12);
+  border-radius: 16px;
+  margin: 4px;
+  transition: all 0.25s ease;
+  position: relative;
+  z-index: 2;
+  padding: 1rem;
+  background: transparent;
+}
+
+.phone-upload-zone:hover,
+.phone-upload-zone.drag-over {
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.04);
+}
+
+.phone-upload-zone.drag-over {
+  border-color: oklch(0.523 0.265 3.32 / 0.8);
+  background: oklch(0.523 0.265 3.32 / 0.08);
+}
+
+.upload-icon-phone {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.upload-zone-text {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.phone-file-input {
+  display: none;
+}
+
+/* Upload button below phone */
+.phone-upload-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted-foreground);
+}
+
+.phone-upload-btn:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.phone-upload-btn svg {
+  flex-shrink: 0;
+}
+
+/* Upload spinner */
+.uploading-indicator {
+  display: none;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.65rem;
+  color: oklch(0.488 0.243 264.376);
+  font-weight: 600;
+}
+
+.upload-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid oklch(0.488 0.243 264.376 / 0.2);
+  border-top-color: oklch(0.488 0.243 264.376);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.phone-card-info {
+  text-align: center;
+  width: 100%;
+  flex: 1; /* Prend l'espace restant pour pousser le bouton vers le bas */
+}
+
+.phone-card-step-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.phone-card-step-desc {
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Conteneur fixe pour le bouton — toujours en bas de chaque card */
+.phone-card-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Theme variations per flow */
+.wifi-theme .phone-frame {
+  box-shadow:
+    0 0 0 1.5px #2a3a4a,
+    0 0 0 2.5px #1a2030,
+    0 12px 40px rgba(0,30,80,0.3),
+    0 4px 12px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(100,150,255,0.08);
+}
+
+.fourg-theme .phone-frame {
+  box-shadow:
+    0 0 0 1.5px #3a2a30,
+    0 0 0 2.5px #221520,
+    0 12px 40px rgba(80,0,30,0.3),
+    0 4px 12px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,100,120,0.08);
+}
+
+/* Section title above phones */
+.flow-section-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.flow-section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.wifi-theme .flow-section-label { color: oklch(0.488 0.243 264.376); }
+.fourg-theme .flow-section-label { color: oklch(0.523 0.265 3.32); }
+
+.flow-section-subtitle {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+/* Upload success badge */
+.upload-success-badge {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: oklch(0.6 0.2 145);
+  border: 2px solid var(--background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: badgePop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 15;
+}
+
+@keyframes badgePop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
