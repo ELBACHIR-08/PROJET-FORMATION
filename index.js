@@ -845,6 +845,16 @@ function setupWikiBot(supabase) {
 
       if (error) throw error;
 
+      // Check for simple greetings
+      const cleanMsg = message.toLowerCase().trim();
+      if (['bonjour', 'bonsoir', 'salut', 'coucou', 'hello'].includes(cleanMsg)) {
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+        let timeGreet = cleanMsg === 'bonsoir' ? 'Bonsoir' : 'Bonjour';
+        appendMessage('bot', `${timeGreet} ! Que puis-je faire pour vous ? N'hésitez pas à me demander une définition (ex: ROI, CPA, Tracking) ou une procédure de la base de connaissances.`);
+        return;
+      }
+
       // Basic keyword extraction (very simple, ignoring some stop words)
       const stopWords = ['le', 'la', 'les', 'un', 'une', 'des', 'est', 'quoi', 'comment', 'pourquoi', 'qui', 'quel', 'quelle', 'c\'est', 'ce', 'que', 'de', 'du', 'au', 'aux', 'et', 'ou', 'dans', 'sur', 'pour', 'avec', 'sans', 'sous', 'vers', 'par', 'bonjour', 'salut', 'merci'];
       const words = message.toLowerCase().replace(/[.,?!]/g, '').split(' ').filter(w => w.length > 2 && !stopWords.includes(w));
