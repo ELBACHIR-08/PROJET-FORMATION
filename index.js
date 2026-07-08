@@ -817,81 +817,82 @@ function openWikiReader(wiki) {
 }
 
 function setupWikiBot(supabase) {
-  const chatForm = document.getElementById('bot-chat-form');
-  const chatInput = document.getElementById('bot-chat-input');
-  const messagesContainer = document.getElementById('bot-messages');
+  document.body.addEventListener('submit', async (e) => {
+    if (e.target && e.target.id === 'bot-chat-form') {
+      e.preventDefault();
+      
+      const chatInput = document.getElementById('bot-chat-input');
+      const messagesContainer = document.getElementById('bot-messages');
+      if (!chatInput || !messagesContainer) return;
+      
+      const message = chatInput.value.trim();
+      if (!message) return;
 
-  if (!chatForm || !chatInput || !messagesContainer) return;
+      // 1. Add User Message
+      appendMessage('user', message);
+      chatInput.value = '';
 
-  chatForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const message = chatInput.value.trim();
-    if (!message) return;
+      // 2. Add Bot "Typing..." Message
+      const typingId = appendMessage('bot', '...', true);
 
-    // 1. Add User Message
-    appendMessage('user', message);
-    chatInput.value = '';
-
-    // 2. Add Bot "Typing..." Message
-    const typingId = appendMessage('bot', '...', true);
-
-    // 3. Search Knowledge Base (RAG simulation via Keyword Search)
-    try {
-      // Fetch all articles for the current vertical
-      const { data: wikis, error } = await supabase
-        .from('wiki_articles')
-        .select('*')
-        .eq('vertical', window.currentVertical || 'LIVE');
-
-      if (error) throw error;
-
-      // Check for simple greetings
-      const cleanMsg = message.toLowerCase().trim();
-      if (['bonjour', 'bonsoir', 'salut', 'coucou', 'hello'].includes(cleanMsg)) {
-        const typingEl = document.getElementById(typingId);
-        if (typingEl) typingEl.remove();
-        let timeGreet = cleanMsg === 'bonsoir' ? 'Bonsoir' : 'Bonjour';
-        appendMessage('bot', `${timeGreet} ! Que puis-je faire pour vous ? N'hésitez pas à me demander une définition (ex: ROI, CPA, Tracking) ou une procédure de la base de connaissances.`);
-        return;
-      }
-
-      // 3. Call OpenAI Vercel API
+      // 3. Search Knowledge Base (RAG simulation via Keyword Search)
       try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            message: message, 
-            vertical: window.currentVertical || 'LIVE' 
-          })
-        });
+        // Fetch all articles for the current vertical
+        const { data: wikis, error } = await supabase
+          .from('wiki_articles')
+          .select('*')
+          .eq('vertical', window.currentVertical || 'LIVE');
 
-        const data = await response.json();
-        
-        // Remove typing indicator
-        const typingEl = document.getElementById(typingId);
-        if (typingEl) typingEl.remove();
+        if (error) throw error;
 
-        if (response.ok && data.reply) {
-          // Convert Markdown to HTML basic (bold, line breaks)
-          let formattedReply = data.reply
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\n/g, '<br>');
-          appendMessage('bot', formattedReply);
-        } else {
-          appendMessage('bot', "Erreur : " + (data.error || "Réponse invalide de l'API"));
+        // Check for simple greetings
+        const cleanMsg = message.toLowerCase().trim();
+        if (['bonjour', 'bonsoir', 'salut', 'coucou', 'hello'].includes(cleanMsg)) {
+          const typingEl = document.getElementById(typingId);
+          if (typingEl) typingEl.remove();
+          let timeGreet = cleanMsg === 'bonsoir' ? 'Bonsoir' : 'Bonjour';
+          appendMessage('bot', `${timeGreet} ! Que puis-je faire pour vous ? N'hésitez pas à me demander une définition (ex: ROI, CPA, Tracking) ou une procédure de la base de connaissances.`);
+          return;
+        }
+
+        // 3. Call OpenAI Vercel API
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              message: message, 
+              vertical: window.currentVertical || 'LIVE' 
+            })
+          });
+
+          const data = await response.json();
+          
+          // Remove typing indicator
+          const typingEl = document.getElementById(typingId);
+          if (typingEl) typingEl.remove();
+
+          if (response.ok && data.reply) {
+            // Convert Markdown to HTML basic (bold, line breaks)
+            let formattedReply = data.reply
+              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+              .replace(/\n/g, '<br>');
+            appendMessage('bot', formattedReply);
+          } else {
+            appendMessage('bot', "Erreur : " + (data.error || "Réponse invalide de l'API"));
+          }
+        } catch (err) {
+          const typingEl = document.getElementById(typingId);
+          if (typingEl) typingEl.remove();
+          console.error(err);
+          appendMessage('bot', "Erreur de connexion au serveur d'IA.");
         }
       } catch (err) {
         const typingEl = document.getElementById(typingId);
         if (typingEl) typingEl.remove();
         console.error(err);
-        appendMessage('bot', "Erreur de connexion au serveur d'IA.");
+        appendMessage('bot', "Erreur technique : " + (err.message || JSON.stringify(err)));
       }
-    } catch (err) {
-      const typingEl = document.getElementById(typingId);
-      if (typingEl) typingEl.remove();
-      console.error(err);
-      appendMessage('bot', "Erreur technique : " + (err.message || JSON.stringify(err)));
     }
   });
 
