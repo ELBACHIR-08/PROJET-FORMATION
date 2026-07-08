@@ -886,9 +886,9 @@ function setupWikiBot(supabase) {
 
       let reply = "";
       if (bestMatch && highestScore > 0) {
-        reply = `D'après le document **${bestMatch.title}**, voici ce que j'ai trouvé :\n\n${bestMatch.content}`;
+        reply = `**${bestMatch.title}**\n\n${bestMatch.content}`;
         if (bestMatch.file_url) {
-          reply += `<br><br><a href="${bestMatch.file_url}" target="_blank" style="color: var(--primary); text-decoration: underline;">📄 Voir le document source</a>`;
+          reply += `<br><br><a href="${bestMatch.file_url}" target="_blank" style="color: var(--primary); text-decoration: underline;">📄 Source</a>`;
         }
       } else {
         reply = "Désolé, je n'ai pas trouvé d'information correspondante dans la base de connaissances (" + (window.currentVertical || "LIVE") + "). Essayez de reformuler ou assurez-vous que le document a été ajouté via 'Alimenter le Bot'.";
