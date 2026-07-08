@@ -855,46 +855,38 @@ function setupWikiBot(supabase) {
         return;
       }
 
-      // Basic keyword extraction (very simple, ignoring some stop words)
-      const stopWords = ['le', 'la', 'les', 'un', 'une', 'des', 'est', 'quoi', 'comment', 'pourquoi', 'qui', 'quel', 'quelle', 'c\'est', 'ce', 'que', 'de', 'du', 'au', 'aux', 'et', 'ou', 'dans', 'sur', 'pour', 'avec', 'sans', 'sous', 'vers', 'par', 'bonjour', 'salut', 'merci'];
-      const words = message.toLowerCase().replace(/[.,?!]/g, '').split(' ').filter(w => w.length > 2 && !stopWords.includes(w));
-
-      let bestMatch = null;
-      let highestScore = 0;
-
-      if (wikis && wikis.length > 0 && words.length > 0) {
-        wikis.forEach(wiki => {
-          let score = 0;
-          const title = wiki.title.toLowerCase();
-          const content = wiki.content.toLowerCase();
-          
-          words.forEach(word => {
-            if (title.includes(word)) score += 5; // Title match weighs more
-            if (content.includes(word)) score += 1;
-          });
-
-          if (score > highestScore) {
-            highestScore = score;
-            bestMatch = wiki;
-          }
+      // 3. Call OpenAI Vercel API
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message: message, 
+            vertical: window.currentVertical || 'LIVE' 
+          })
         });
-      }
 
-      // Remove typing indicator
-      const typingEl = document.getElementById(typingId);
-      if (typingEl) typingEl.remove();
+        const data = await response.json();
+        
+        // Remove typing indicator
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
 
-      let reply = "";
-      if (bestMatch && highestScore > 0) {
-        reply = `**${bestMatch.title}**\n\n${bestMatch.content}`;
-        if (bestMatch.file_url) {
-          reply += `<br><br><a href="${bestMatch.file_url}" target="_blank" style="color: var(--primary); text-decoration: underline;">📄 Source</a>`;
+        if (response.ok && data.reply) {
+          // Convert Markdown to HTML basic (bold, line breaks)
+          let formattedReply = data.reply
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+          appendMessage('bot', formattedReply);
+        } else {
+          appendMessage('bot', "Erreur : " + (data.error || "Réponse invalide de l'API"));
         }
-      } else {
-        reply = "Désolé, je n'ai pas trouvé d'information correspondante dans la base de connaissances (" + (window.currentVertical || "LIVE") + "). Essayez de reformuler ou assurez-vous que le document a été ajouté via 'Alimenter le Bot'.";
+      } catch (err) {
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+        console.error(err);
+        appendMessage('bot', "Erreur de connexion au serveur d'IA.");
       }
-
-      appendMessage('bot', reply);
     } catch (err) {
       const typingEl = document.getElementById(typingId);
       if (typingEl) typingEl.remove();
