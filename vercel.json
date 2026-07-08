@@ -3,6 +3,8 @@
   "cleanUrls": true,
   "builds": [
     { "src": "api/waitlist.js", "use": "@vercel/node" },
+    { "src": "api/env.js", "use": "@vercel/node" },
+    { "src": "api/chat.js", "use": "@vercel/node" },
     { "src": "**/*.html", "use": "@vercel/static" },
     { "src": "**/*.css", "use": "@vercel/static" },
     { "src": "**/*.js", "use": "@vercel/static" },
@@ -10,6 +12,8 @@
   ],
   "routes": [
     { "src": "/api/waitlist", "dest": "/api/waitlist.js" },
+    { "src": "/api/chat", "dest": "/api/chat.js" },
+    { "src": "/env.js", "dest": "/api/env.js" },
     { "src": "/(.*)", "dest": "/$1" }
   ]
 }
