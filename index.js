@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // --------------------------------------------------------
   let currentVertical = 'LIVE';
   window.currentVertical = currentVertical;
-  let currentFormat = 'WIKI';
+  let currentFormat = 'PARCOURS_CLIENT';
   let currentOperator = null;
 
   const welcomeView = document.getElementById('welcome-view');
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (dashboardView) dashboardView.style.display = 'none';
   if (parcoursView) parcoursView.style.display = 'none';
 
-  // Sidebar clicks (Directly opens chatbot)
+  // Sidebar clicks (Opens Operator Choice for Parcours Client)
   document.querySelectorAll('#sidebar-verticals .nav-item').forEach(el => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
@@ -109,12 +109,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       el.classList.add('active');
       currentVertical = el.getAttribute('data-vertical');
       window.currentVertical = currentVertical;
+      currentFormat = 'PARCOURS_CLIENT'; // Set back to Parcours Client
       currentOperator = null; // Reset operator
       if (welcomeView) welcomeView.style.display = 'none';
-      if (operatorView) operatorView.style.display = 'none';
-      if (dashboardView) dashboardView.style.display = 'block';
+      if (operatorView) operatorView.style.display = 'block';
+      if (dashboardView) dashboardView.style.display = 'none';
       if (parcoursView) parcoursView.style.display = 'none';
-      renderDashboardGrid();
+      renderOperatorGrid();
     });
   });
 
@@ -123,6 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (btnHeaderWiki) {
     btnHeaderWiki.addEventListener('click', (e) => {
       e.preventDefault();
+      currentFormat = 'WIKI'; // Switch format to WIKI
       currentOperator = null;
       if (welcomeView) welcomeView.style.display = 'none';
       if (operatorView) operatorView.style.display = 'none';
@@ -145,11 +147,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Welcome page banner launch button click
+  // Welcome page banner launch button click (Goes straight to chatbot)
   const btnWelcomeLaunchWiki = document.getElementById('btn-welcome-launch-wiki');
   if (btnWelcomeLaunchWiki) {
     btnWelcomeLaunchWiki.addEventListener('click', (e) => {
       e.preventDefault();
+      currentFormat = 'WIKI'; // Switch format to WIKI
       currentOperator = null;
       if (welcomeView) welcomeView.style.display = 'none';
       if (operatorView) operatorView.style.display = 'none';
@@ -159,7 +162,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Welcome page vertical cards click
+  // Welcome page vertical cards click (Opens Operator Choice for Parcours Client)
   document.querySelectorAll('.welcome-card').forEach(card => {
     card.addEventListener('click', (e) => {
       e.preventDefault();
@@ -176,17 +179,29 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         });
         
-        // Hide welcome page and show bot
+        currentFormat = 'PARCOURS_CLIENT'; // Set back to Parcours Client
         currentOperator = null;
         if (welcomeView) welcomeView.style.display = 'none';
-        if (operatorView) operatorView.style.display = 'none';
-        if (dashboardView) dashboardView.style.display = 'block';
+        if (operatorView) operatorView.style.display = 'block';
+        if (dashboardView) dashboardView.style.display = 'none';
         if (parcoursView) parcoursView.style.display = 'none';
-        renderDashboardGrid();
+        renderOperatorGrid();
         window.scrollTo(0, 0);
       }
     });
   });
+
+  // Operator back button click listener
+  if (btnBackOperator) {
+    btnBackOperator.addEventListener('click', () => {
+      currentOperator = null;
+      if (welcomeView) welcomeView.style.display = 'none';
+      if (operatorView) operatorView.style.display = 'block';
+      if (dashboardView) dashboardView.style.display = 'none';
+      if (parcoursView) parcoursView.style.display = 'none';
+      window.scrollTo(0, 0);
+    });
+  }
 
   if (btnBackDashboard) {
     btnBackDashboard.addEventListener('click', () => {
@@ -230,6 +245,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Si c'est WIKI
     if (currentFormat === 'WIKI') {
+      if (btnBackOperator) btnBackOperator.style.display = 'none';
       gridTitle.textContent = `Assistant IA — Base de connaissances ${currentVertical}`;
       document.getElementById('grid-subtitle').textContent = "Posez vos questions, l'IA vous répondra à partir des documents internes.";
       
@@ -245,7 +261,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // Sinon, comportement normal
+    // Sinon, comportement normal (PARCOURS_CLIENT)
+    if (btnBackOperator) btnBackOperator.style.display = 'flex';
     wikiBotContainer.style.display = 'none';
     wikiActions.style.display = 'none';
 
