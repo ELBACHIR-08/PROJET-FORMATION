@@ -20,7 +20,7 @@
 <body>
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="sidebar-header">
+    <div class="sidebar-header" id="btn-sidebar-logo" style="cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
       <img src="logo.png" alt="Digital Virgo Logo" class="sidebar-logo">
     </div>
     
@@ -266,7 +266,7 @@
   <!-- Data (mock) -->
   <script src="/data/services.js"></script>
   <!-- Main logic -->
-  <script src="index.js?v=3"></script>
+  <script src="index.js?v=4"></script>
 
   <!-- Profile Settings Modal -->
   <div class="modal-overlay" id="profile-modal" style="display: none;">

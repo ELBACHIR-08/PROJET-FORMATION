@@ -134,16 +134,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Header Title / Logo click (returns to Welcome page)
+  // Helper function to return to Welcome page
+  const navigateToHome = () => {
+    // Reset active class from sidebar vertical items since we are returning home
+    document.querySelectorAll('#sidebar-verticals .nav-item').forEach(n => n.classList.remove('active'));
+    
+    if (welcomeView) welcomeView.style.display = 'block';
+    if (operatorView) operatorView.style.display = 'none';
+    if (dashboardView) dashboardView.style.display = 'none';
+    if (parcoursView) parcoursView.style.display = 'none';
+    window.scrollTo(0, 0);
+  };
+
+  // Header Title click (returns to Welcome page)
   const btnHeaderHome = document.getElementById('btn-header-home');
   if (btnHeaderHome) {
     btnHeaderHome.addEventListener('click', (e) => {
       e.preventDefault();
-      if (welcomeView) welcomeView.style.display = 'block';
-      if (operatorView) operatorView.style.display = 'none';
-      if (dashboardView) dashboardView.style.display = 'none';
-      if (parcoursView) parcoursView.style.display = 'none';
-      window.scrollTo(0, 0);
+      navigateToHome();
+    });
+  }
+
+  // Sidebar Logo click (returns to Welcome page)
+  const btnSidebarLogo = document.getElementById('btn-sidebar-logo');
+  if (btnSidebarLogo) {
+    btnSidebarLogo.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateToHome();
     });
   }
 
