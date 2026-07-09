@@ -160,13 +160,14 @@ body {
 
 /* Top Header */
 .top-header {
-  height: 64px;
+  height: auto;
+  min-height: 64px;
   background-color: var(--card);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 0.75rem 2rem;
   position: sticky;
   top: 0;
   z-index: 5;
@@ -960,4 +961,24 @@ body {
 @keyframes typing {
   0%, 100% { transform: scale(1); opacity: 0.5; }
   50% { transform: scale(1.5); opacity: 1; }
+}
+
+/* Welcome Card and Portal Styles */
+.welcome-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary) !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+.welcome-card svg {
+  transition: transform 0.2s ease;
+}
+
+.welcome-card:hover svg {
+  transform: scale(1.05);
+}
+
+#btn-welcome-launch-wiki:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(226, 0, 116, 0.35);
 }

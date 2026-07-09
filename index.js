@@ -37,6 +37,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    // Set Welcome Greeting Name
+    const welcomeUserElem = document.getElementById('welcome-user-name');
+    if (welcomeUserElem) {
+      welcomeUserElem.textContent = metadata.first_name || session.user.email.split('@')[0];
+    }
+
     // 2. Set Role
     if (roleElem) {
       roleElem.textContent = metadata.job_title || 'Utilisateur';
@@ -76,9 +82,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // --------------------------------------------------------
   let currentVertical = 'LIVE';
   window.currentVertical = currentVertical;
-  let currentFormat = 'PARCOURS_CLIENT';
+  let currentFormat = 'WIKI';
   let currentOperator = null;
 
+  const welcomeView = document.getElementById('welcome-view');
   const operatorView = document.getElementById('operator-view');
   const dashboardView = document.getElementById('dashboard-view');
   const parcoursView = document.getElementById('parcours-view');
@@ -88,13 +95,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const servicesGrid = document.getElementById('services-grid');
   const gridTitle = document.getElementById('grid-title');
 
-  // Initial render
-  operatorView.style.display = 'block';
-  dashboardView.style.display = 'none';
-  parcoursView.style.display = 'none';
-  renderOperatorGrid();
+  // Initial render - Show Welcome page by default
+  if (welcomeView) welcomeView.style.display = 'block';
+  if (operatorView) operatorView.style.display = 'none';
+  if (dashboardView) dashboardView.style.display = 'none';
+  if (parcoursView) parcoursView.style.display = 'none';
 
-  // Sidebar clicks
+  // Sidebar clicks (Directly opens chatbot)
   document.querySelectorAll('#sidebar-verticals .nav-item').forEach(el => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
@@ -103,61 +110,88 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentVertical = el.getAttribute('data-vertical');
       window.currentVertical = currentVertical;
       currentOperator = null; // Reset operator
-      operatorView.style.display = 'block';
-      dashboardView.style.display = 'none';
-      parcoursView.style.display = 'none';
-      renderOperatorGrid();
+      if (welcomeView) welcomeView.style.display = 'none';
+      if (operatorView) operatorView.style.display = 'none';
+      if (dashboardView) dashboardView.style.display = 'block';
+      if (parcoursView) parcoursView.style.display = 'none';
+      renderDashboardGrid();
     });
   });
 
-  // Header tabs clicks
-  document.querySelectorAll('#header-formats .format-tab').forEach(el => {
-    el.addEventListener('click', (e) => {
+  // Header WIKI button click (Goes straight to chatbot)
+  const btnHeaderWiki = document.getElementById('btn-header-wiki');
+  if (btnHeaderWiki) {
+    btnHeaderWiki.addEventListener('click', (e) => {
       e.preventDefault();
-      document.querySelectorAll('#header-formats .format-tab').forEach(n => {
-        n.classList.remove('active');
-        n.style.borderBottomColor = 'transparent';
-        n.style.color = 'var(--muted-foreground)';
-      });
-      el.classList.add('active');
-      el.style.borderBottomColor = 'var(--primary)';
-      el.style.color = 'var(--foreground)';
-      currentFormat = el.getAttribute('data-format');
-      
-      if (currentFormat === 'WIKI') {
-        currentOperator = null;
-        operatorView.style.display = 'none';
-        dashboardView.style.display = 'block';
-        parcoursView.style.display = 'none';
-        renderDashboardGrid();
-      } else if (currentOperator) {
-        operatorView.style.display = 'none';
-        dashboardView.style.display = 'block';
-        parcoursView.style.display = 'none';
-        renderDashboardGrid();
-      } else {
-        operatorView.style.display = 'block';
-        dashboardView.style.display = 'none';
-        parcoursView.style.display = 'none';
-        renderOperatorGrid();
-      }
-    });
-  });
-
-  if (btnBackOperator) {
-    btnBackOperator.addEventListener('click', () => {
       currentOperator = null;
-      operatorView.style.display = 'block';
-      dashboardView.style.display = 'none';
-      parcoursView.style.display = 'none';
+      if (welcomeView) welcomeView.style.display = 'none';
+      if (operatorView) operatorView.style.display = 'none';
+      if (dashboardView) dashboardView.style.display = 'block';
+      if (parcoursView) parcoursView.style.display = 'none';
+      renderDashboardGrid();
+    });
+  }
+
+  // Header Title / Logo click (returns to Welcome page)
+  const btnHeaderHome = document.getElementById('btn-header-home');
+  if (btnHeaderHome) {
+    btnHeaderHome.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (welcomeView) welcomeView.style.display = 'block';
+      if (operatorView) operatorView.style.display = 'none';
+      if (dashboardView) dashboardView.style.display = 'none';
+      if (parcoursView) parcoursView.style.display = 'none';
       window.scrollTo(0, 0);
     });
   }
 
+  // Welcome page banner launch button click
+  const btnWelcomeLaunchWiki = document.getElementById('btn-welcome-launch-wiki');
+  if (btnWelcomeLaunchWiki) {
+    btnWelcomeLaunchWiki.addEventListener('click', (e) => {
+      e.preventDefault();
+      currentOperator = null;
+      if (welcomeView) welcomeView.style.display = 'none';
+      if (operatorView) operatorView.style.display = 'none';
+      if (dashboardView) dashboardView.style.display = 'block';
+      if (parcoursView) parcoursView.style.display = 'none';
+      renderDashboardGrid();
+    });
+  }
+
+  // Welcome page vertical cards click
+  document.querySelectorAll('.welcome-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      const vertical = card.getAttribute('data-vertical');
+      if (vertical) {
+        currentVertical = vertical;
+        window.currentVertical = currentVertical;
+        
+        // Update sidebar active link state
+        document.querySelectorAll('#sidebar-verticals .nav-item').forEach(n => {
+          n.classList.remove('active');
+          if (n.getAttribute('data-vertical') === vertical) {
+            n.classList.add('active');
+          }
+        });
+        
+        // Hide welcome page and show bot
+        currentOperator = null;
+        if (welcomeView) welcomeView.style.display = 'none';
+        if (operatorView) operatorView.style.display = 'none';
+        if (dashboardView) dashboardView.style.display = 'block';
+        if (parcoursView) parcoursView.style.display = 'none';
+        renderDashboardGrid();
+        window.scrollTo(0, 0);
+      }
+    });
+  });
+
   if (btnBackDashboard) {
     btnBackDashboard.addEventListener('click', () => {
-      parcoursView.style.display = 'none';
-      dashboardView.style.display = 'block';
+      if (parcoursView) parcoursView.style.display = 'none';
+      if (dashboardView) dashboardView.style.display = 'block';
       window.scrollTo(0, 0);
     });
   }
