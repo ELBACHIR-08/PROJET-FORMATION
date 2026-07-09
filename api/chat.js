@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 
     const systemPrompt = "Tu es un assistant virtuel pour l'entreprise Digital Virgo. Reponds aux questions EXCLUSIVEMENT en te basant sur le contexte ci-dessous. Si la reponse n'y est pas, dis que tu ne sais pas.\n\nContexte :\n" + contextText;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
