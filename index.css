@@ -1761,3 +1761,175 @@ body {
     font-size: 0.9em;
   }
 }
+
+
+/* ============================================================ */
+/* WIKI SPLIT LAYOUT & ANIMATED LIST (ZAPIER + ACTIVITIES) */
+/* ============================================================ */
+
+.wiki-split-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  height: 600px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .wiki-split-layout {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .dv-activity-panel {
+    max-width: 100% !important;
+    height: 400px;
+  }
+}
+
+.dv-chatbot-panel {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 600px;
+}
+
+.dv-activity-panel {
+  flex: 1;
+  max-width: 420px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 1rem;
+}
+
+html.dark .dv-activity-panel {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.dv-activity-header h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+  margin-bottom: 1rem;
+}
+
+.dv-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.dv-activity-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5rem;
+  background: linear-gradient(to top, var(--background), transparent);
+  pointer-events: none;
+}
+
+.dv-activity-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: var(--card);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.05), 0 12px 24px rgba(0,0,0,0.05);
+  animation: slideInFromBottom 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+}
+
+html.dark .dv-activity-card {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+.dv-activity-card:hover {
+  transform: translateY(0) scale(1.02);
+}
+
+.dv-activity-card-icon {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  font-size: 1.125rem;
+  color: white;
+}
+
+.dv-activity-card-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dv-activity-card-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+.dv-activity-card-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dv-activity-card-dot {
+  margin: 0 0.375rem;
+  color: var(--muted-foreground);
+}
+
+.dv-activity-card-time {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--muted-foreground);
+}
+
+.dv-activity-card-desc {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  margin-top: 0.125rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

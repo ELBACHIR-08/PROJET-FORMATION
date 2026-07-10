@@ -451,6 +451,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       servicesGrid.style.display = 'none';
       wikiBotContainer.style.display = 'flex';
       
+      if (!window.animatedListInitialized) {
+        if (typeof initAnimatedActivityList === 'function') initAnimatedActivityList();
+        window.animatedListInitialized = true;
+      }
+      
       // Afficher le bouton Créer si Admin
       if (session.user.user_metadata?.role === 'ADMIN' || true) {
         wikiActions.style.display = 'flex';
@@ -1809,3 +1814,101 @@ function setupHomeManagement(supabase, currentUserRole) {
   }
 
 } // end setupHomeManagement
+
+
+// ============================================================
+// MAGIC UI ANIMATED LIST PORT (VANILLA JS)
+// ============================================================
+const dvActivities = [
+  {
+    name: "KPI ARPU consulté",
+    description: "Formule et utilité métier transmises à l'utilisateur.",
+    time: "À l'instant",
+    icon: "📊",
+    color: "#E5007D", // Magenta officiel Virgo
+    type: 'kpi',
+  },
+  {
+    name: "Fiche collaborateur lue",
+    description: "Consultation de l'annuaire interne (Équipe Sénégal).",
+    time: "Il y a 3m",
+    icon: "👤",
+    color: "#2D3139", // Anthracite officiel Digital
+    type: 'team',
+  },
+  {
+    name: "Automatisation Zapier exécutée",
+    description: "Mise à jour automatique du dictionnaire des KPIs depuis Google Sheets.",
+    time: "Il y a 12m",
+    icon: "⚡",
+    color: "#FF4A00", // Orange natif de l'icône Zapier
+    type: 'zapier',
+  },
+  {
+    name: "KPI Churn Rate vérifié",
+    description: "Extraction de la règle métier et des paliers de volume capping.",
+    time: "Il y a 25m",
+    icon: "📈",
+    color: "#E5007D", // Magenta officiel Virgo
+    type: 'kpi',
+  },
+];
+
+let activityInterval;
+let activityIndex = 0;
+
+function initAnimatedActivityList() {
+  const container = document.getElementById('dv-activity-list-container');
+  if (!container) return;
+  
+  // Clear any existing interval
+  if (activityInterval) clearInterval(activityInterval);
+  container.innerHTML = '';
+  
+  // Create card DOM element
+  function createCard(item) {
+    const card = document.createElement('div');
+    card.className = 'dv-activity-card';
+    
+    card.innerHTML = `
+      <div class="dv-activity-card-icon" style="background-color: ${item.color}">
+        ${item.icon}
+      </div>
+      <div class="dv-activity-card-content">
+        <div class="dv-activity-card-title">
+          <span class="dv-activity-card-name">${item.name}</span>
+          <span class="dv-activity-card-dot">·</span>
+          <span class="dv-activity-card-time">${item.time}</span>
+        </div>
+        <div class="dv-activity-card-desc">
+          ${item.description}
+        </div>
+      </div>
+    `;
+    return card;
+  }
+
+  // Pre-fill with a few items instantly
+  for (let i = 0; i < 2; i++) {
+    const item = dvActivities[activityIndex % dvActivities.length];
+    const card = createCard(item);
+    container.insertBefore(card, container.firstChild);
+    activityIndex++;
+  }
+
+  // Set interval to simulate live feed (delay 2500ms)
+  activityInterval = setInterval(() => {
+    const item = dvActivities[activityIndex % dvActivities.length];
+    const card = createCard(item);
+    
+    // Insert at the top
+    container.insertBefore(card, container.firstChild);
+    
+    // Keep maximum of 6 cards in DOM to prevent performance issues
+    if (container.children.length > 6) {
+      container.removeChild(container.lastChild);
+    }
+    
+    activityIndex++;
+  }, 2500);
+}

@@ -251,8 +251,22 @@
         </div>
 
         <!-- Chatbot Interface for WIKI -->
-        <div id="wiki-bot-container" style="display: none; justify-content: center; align-items: center; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); height: 600px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-          <zapier-interfaces-chatbot-embed is-popup='false' chatbot-id='cmrfcy1kp0069sqezhctg0c4g' height='600px' width='100%' style="max-width: 800px;"></zapier-interfaces-chatbot-embed>
+        <div id="wiki-bot-container" style="display: none;" class="wiki-split-layout">
+          <!-- Animated Activity List -->
+          <div class="dv-activity-panel">
+            <div class="dv-activity-header">
+              <h3>Activité du Wiki en direct</h3>
+            </div>
+            <div class="dv-activity-list" id="dv-activity-list-container">
+              <!-- Dynamically populated via JS -->
+            </div>
+            <div class="dv-activity-gradient"></div>
+          </div>
+
+          <!-- Zapier Chatbot -->
+          <div class="dv-chatbot-panel">
+            <zapier-interfaces-chatbot-embed is-popup='false' chatbot-id='cmrfcy1kp0069sqezhctg0c4g' height='100%' width='100%'></zapier-interfaces-chatbot-embed>
+          </div>
         </div>
       </div>
 
