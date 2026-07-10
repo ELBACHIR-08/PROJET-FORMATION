@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const supabaseKey = window.ENV?.SUPABASE_ANON_KEY;
   let supabase = null;
   let session = null;
-  let currentUserRole = 'LECTEUR';
+  let currentUserRole = 'READER';
 
   if (!supabaseUrl || !supabaseKey) {
     console.error("Supabase config missing!");
@@ -23,17 +23,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     session = currentSession;
     const metadata = session.user.user_metadata || {};
-    currentUserRole = metadata.role || 'LECTEUR'; // Default role is LECTEUR
+    currentUserRole = metadata.role || 'READER'; // Default role is READER
 
-    // Hardcoded Super Admin for the owner (accepts aliases like +test)
+    // Hardcoded ADMIN for the owner (accepts aliases like +test)
     if (currentSession.user.email && currentSession.user.email.includes('mouhamadouelbachir')) {
-      currentUserRole = 'SUPER_ADMIN';
+      currentUserRole = 'ADMIN';
     }
 
-    // Hide Admin sidebar button if LECTEUR
+    // Hide Admin sidebar button if READER
     const btnGotoAdmin = document.getElementById('btn-goto-admin');
-    if (btnGotoAdmin && currentUserRole === 'LECTEUR') {
+    if (btnGotoAdmin && currentUserRole !== 'ADMIN') {
       btnGotoAdmin.style.display = 'none';
+    } else if (btnGotoAdmin) {
+      btnGotoAdmin.style.display = 'flex';
     }
 
     // Affichage des informations utilisateur dans la sidebar
@@ -142,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (cleanPath === '/admin') {
-      if (currentUserRole === 'LECTEUR') {
+      if (currentUserRole === 'READER') {
         alert("Accès refusé. Vous n'avez pas les droits d'administration.");
         navigateTo('/');
         return;
@@ -455,7 +457,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       
       // Afficher le bouton Créer si Admin
-      if (session.user.user_metadata?.role === 'ADMIN' || true) {
+      if (currentUserRole === 'ADMIN') {
         wikiActions.style.display = 'flex';
       } else {
         wikiActions.style.display = 'none';
@@ -807,8 +809,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       listBody.innerHTML = '';
       users.forEach(u => {
         const meta = u.user_metadata || {};
-        const role = meta.role || 'LECTEUR';
-        const roleColor = role === 'SUPER_ADMIN' ? 'var(--destructive)' : (role === 'ADMIN' ? 'var(--primary)' : 'var(--muted-foreground)');
+        const role = meta.role || 'READER';
+        const roleColor = role === 'ADMIN' ? 'var(--destructive)' : (role === 'ADMIN' ? 'var(--primary)' : 'var(--muted-foreground)');
         
         listBody.innerHTML += `
           <tr style="border-bottom: 1px solid var(--border);">
@@ -1211,7 +1213,7 @@ function setupHomeManagement(supabase, currentUserRole) {
 
     if (!supabase || !container) return;
 
-    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
+    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'ADMIN');
     if (isAdmin && uploadContainer) {
       uploadContainer.style.display = 'flex';
     }
@@ -1396,7 +1398,7 @@ function setupHomeManagement(supabase, currentUserRole) {
 
     if (!supabase) return;
 
-    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
+    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'ADMIN');
     if (isAdmin && aboutAdminActions) {
       aboutAdminActions.style.display = 'flex';
     }
@@ -1513,7 +1515,7 @@ function setupHomeManagement(supabase, currentUserRole) {
       <div class="chroma-fade"></div>
     `;
 
-    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
+    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'ADMIN');
     if (isAdmin && btnAddCollab) {
       btnAddCollab.style.display = 'flex';
     }
