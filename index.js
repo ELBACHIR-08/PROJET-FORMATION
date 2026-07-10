@@ -1334,18 +1334,23 @@ function setupHomeManagement(supabase, currentUserRole) {
         .from('home_settings')
         .select('value')
         .eq('key', 'team_gallery_photos')
-        .single();
+        .maybeSingle();
 
       if (row && row.value) {
         const savedPhotos = JSON.parse(row.value);
-        if (Array.isArray(savedPhotos) && savedPhotos.length > 0) {
-          // Put uploaded photos FIRST in the gallery
-          galleryItems = [...savedPhotos, ...defaultGalleryItems];
-          if (btnDeletePhoto && isAdmin) btnDeletePhoto.style.display = 'flex';
+        if (Array.isArray(savedPhotos)) {
+          // Overwrite default photos entirely if user has interacted (even if empty)
+          galleryItems = savedPhotos;
         }
       }
     } catch (err) {
       console.warn("Could not load team gallery from DB", err);
+    }
+    
+    if (btnDeletePhoto && isAdmin && galleryItems.length > 0) {
+      btnDeletePhoto.style.display = 'flex';
+    } else if (btnDeletePhoto) {
+      btnDeletePhoto.style.display = 'none';
     }
 
     // Destroy previous instance if any
@@ -1356,7 +1361,9 @@ function setupHomeManagement(supabase, currentUserRole) {
 
     container.innerHTML = '';
 
-    if (window.CircularGallery) {
+    if (galleryItems.length === 0) {
+      container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.5);font-size:1rem;font-style:italic;">Aucune photo. Ajoutez-en une pour démarrer la galerie.</div>';
+    } else if (window.CircularGallery) {
       window.teamGalleryInstance = await window.CircularGallery.init(container, {
         items: galleryItems,
         bend: 3,
@@ -1446,12 +1453,12 @@ function setupHomeManagement(supabase, currentUserRole) {
   const btnDeletePhoto = document.getElementById('btn-delete-team-photo');
   if (btnDeletePhoto) {
     btnDeletePhoto.addEventListener('click', async () => {
-      if (!confirm("Supprimer TOUTES vos photos personnalisées de la galerie ? Les photos par défaut resteront.")) return;
+      if (!confirm("Voulez-vous vraiment supprimer TOUTES les photos de la galerie ?")) return;
 
       try {
         await saveTeamGalleryPhotos([]);
         await loadTeamPhoto();
-        alert("Photos supprimées !");
+        alert("Toutes les photos ont été supprimées !");
       } catch (err) {
         alert("Erreur lors de la suppression : " + err.message);
       }
