@@ -42,7 +42,6 @@ ${contextText}`;
 
     const isOpenAI = apiKey.startsWith('sk-');
     let replyText = '';
-    let apiFailed = false;
 
     if (isOpenAI) {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -63,14 +62,15 @@ ${contextText}`;
 
       const data = await response.json();
       if (!response.ok) {
-        console.warn("OpenAI API failed (Quota/Limit), switching to free fallback...", data.error?.message);
-        apiFailed = true;
-      } else {
-        replyText = data.choices[0].message.content;
+        if (data.error?.code === 'insufficient_quota' || data.error?.message?.toLowerCase().includes('quota')) {
+          return res.status(403).json({ error: "Votre clé OpenAI n'a plus de crédits ou a expiré. Veuillez générer une clé gratuite Google Gemini via https://aistudio.google.com/app/apikey" });
+        }
+        return res.status(500).json({ error: data.error?.message || "Erreur OpenAI API" });
       }
+      replyText = data.choices[0].message.content;
     } else {
       // Fallback Gemini logic
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -82,32 +82,12 @@ ${contextText}`;
 
       const data = await response.json();
       if (!response.ok) {
-        console.warn("Gemini API failed (Quota/Limit), switching to free fallback...", data.error?.message);
-        apiFailed = true;
-      } else {
-        replyText = data.candidates[0].content.parts[0].text;
+        if (data.error?.message?.toLowerCase().includes('quota')) {
+          return res.status(403).json({ error: "Votre clé Google Gemini a atteint sa limite de quota gratuit. Veuillez générer une nouvelle clé sur un autre compte Google via https://aistudio.google.com/app/apikey" });
+        }
+        return res.status(500).json({ error: data.error?.message || "Erreur Gemini API" });
       }
-    }
-
-    // ULTIMATE FAIL-SAFE: Free AI endpoint (No API key required)
-    if (apiFailed) {
-      const fallbackResponse = await fetch('https://text.pollinations.ai/openai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'openai',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: message }
-          ],
-          temperature: 0.1
-        })
-      });
-      const fallbackData = await fallbackResponse.json();
-      if (!fallbackResponse.ok) {
-        return res.status(500).json({ error: "Tous les services IA sont actuellement indisponibles." });
-      }
-      replyText = fallbackData.choices[0].message.content;
+      replyText = data.candidates[0].content.parts[0].text;
     }
 
     return res.status(200).json({ reply: replyText });
