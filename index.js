@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (adminView) adminView.style.display = 'none';
     
     // Clear sidebar active states
-    document.querySelectorAll('#sidebar-verticals .nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('#sidebar-verticals .line-sidebar-item').forEach(n => n.classList.remove('active'));
 
     const cleanPath = path.replace(/\/$/, '').toLowerCase() || '/';
 
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.currentVertical = currentVertical;
 
       // set sidebar active
-      const activeNav = document.querySelector(`#sidebar-verticals .nav-item[data-vertical="${verticalKey}"]`);
+      const activeNav = document.querySelector(`#sidebar-verticals .line-sidebar-item[data-vertical="${verticalKey}"]`);
       if (activeNav) activeNav.classList.add('active');
 
       const operators = ['Orange Senegal', 'YAS Senegal', 'Expresso Senegal'];
@@ -223,13 +223,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Sidebar clicks
-  document.querySelectorAll('#sidebar-verticals .nav-item').forEach(el => {
+  document.querySelectorAll('#sidebar-verticals .line-sidebar-item').forEach(el => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
       const vertical = el.getAttribute('data-vertical').toLowerCase();
       navigateTo(`/${vertical}`);
     });
   });
+
+  // LineSidebar interactive effect
+  const lineSidebar = document.getElementById('sidebar-verticals');
+  if (lineSidebar) {
+    const items = lineSidebar.querySelectorAll('.line-sidebar-item');
+    const maxShift = 20;
+    const proximityRadius = 120;
+
+    lineSidebar.addEventListener('mousemove', (e) => {
+      const mouseY = e.clientY;
+
+      items.forEach((item) => {
+        const itemRect = item.getBoundingClientRect();
+        const itemCenter = itemRect.top + itemRect.height / 2;
+        const distance = Math.abs(mouseY - itemCenter);
+        
+        if (distance < proximityRadius) {
+          // Smooth falloff (gaussian-like)
+          const ratio = 1 - (distance / proximityRadius);
+          const shift = ratio * ratio * maxShift;
+          item.style.transform = `translateX(${shift}px)`;
+        } else {
+          item.style.transform = `translateX(0px)`;
+        }
+      });
+    });
+
+    lineSidebar.addEventListener('mouseleave', () => {
+      items.forEach((item) => {
+        item.style.transform = `translateX(0px)`;
+      });
+    });
+  }
 
   // Header WIKI button click
   const btnHeaderWiki = document.getElementById('btn-header-wiki');
