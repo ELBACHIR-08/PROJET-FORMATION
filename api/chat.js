@@ -40,7 +40,8 @@ Cependant, tu as le droit de répondre de manière naturelle aux formules de pol
 Contexte (Base de connaissances interne) :
 ${contextText}`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+    // Fallback to gemini-pro (Gemini 1.0 Pro is universally supported)
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
