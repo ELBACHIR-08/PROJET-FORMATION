@@ -1485,7 +1485,7 @@ body {
   height: auto;
   border-radius: var(--radius);
   overflow: hidden;
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border, var(--border));
   transition: border-color 0.3s ease;
   background: var(--card-gradient, var(--card));
 
@@ -1517,7 +1517,7 @@ body {
   position: relative;
   z-index: 1;
   width: 100%;
-  height: 200px;
+  aspect-ratio: 4 / 5;
   padding: 10px;
   box-sizing: border-box;
   background: transparent;
