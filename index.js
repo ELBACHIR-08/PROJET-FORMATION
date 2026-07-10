@@ -1537,7 +1537,7 @@ function setupHomeManagement(supabase, currentUserRole) {
 
       if (error) throw error;
 
-      const colors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+      const colors = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
       const overlay = grid.querySelector('.chroma-overlay');
 
       members.forEach((member, index) => {
@@ -1545,7 +1545,7 @@ function setupHomeManagement(supabase, currentUserRole) {
         card.className = 'chroma-card';
         
         const borderColor = colors[index % colors.length];
-        const gradient = `linear-gradient(${135 + index * 10}deg, ${borderColor}33, #000)`;
+        const gradient = `linear-gradient(${135 + index * 10}deg, color-mix(in srgb, ${borderColor} 30%, transparent), transparent)`;
         
         card.style.setProperty('--card-border', borderColor);
         card.style.setProperty('--card-gradient', gradient);
@@ -1554,7 +1554,7 @@ function setupHomeManagement(supabase, currentUserRole) {
         let deleteBtnHTML = '';
         if (isAdmin) {
           deleteBtnHTML = `
-            <button class="btn-delete-member" data-id="${member.id}" style="position: absolute; top: 0.75rem; right: 0.75rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: var(--destructive); cursor: pointer; padding: 0.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;" onmouseover="this.style.background='var(--destructive)'; this.style.color='white'" onmouseout="this.style.background='rgba(0,0,0,0.5)'; this.style.color='var(--destructive)'">
+            <button class="btn-delete-member" data-id="${member.id}" style="position: absolute; top: 0.75rem; right: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--destructive); cursor: pointer; padding: 0.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;" onmouseover="this.style.background='var(--destructive)'; this.style.color='var(--destructive-foreground)'" onmouseout="this.style.background='transparent'; this.style.color='var(--destructive)'">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             </button>
           `;

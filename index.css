@@ -1483,7 +1483,7 @@ body {
   flex-direction: column;
   width: 100%;
   height: auto;
-  border-radius: 20px;
+  border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border);
   transition: border-color 0.3s ease;
@@ -1491,7 +1491,7 @@ body {
 
   --mouse-x: 50%;
   --mouse-y: 50%;
-  --spotlight-color: rgba(255, 255, 255, 0.15);
+  --spotlight-color: oklch(1 0 0 / 15%);
 }
 
 .chroma-card:hover {
@@ -1528,7 +1528,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: calc(var(--radius) - 4px);
   display: block;
 }
 
@@ -1569,23 +1569,23 @@ body {
     circle var(--r) at var(--x) var(--y),
     transparent 0%,
     transparent 15%,
-    rgba(0, 0, 0, 0.1) 30%,
-    rgba(0, 0, 0, 0.22) 45%,
-    rgba(0, 0, 0, 0.35) 60%,
-    rgba(0, 0, 0, 0.5) 75%,
-    rgba(0, 0, 0, 0.68) 88%,
-    white 100%
+    oklch(0 0 0 / 10%) 30%,
+    oklch(0 0 0 / 22%) 45%,
+    oklch(0 0 0 / 35%) 60%,
+    oklch(0 0 0 / 50%) 75%,
+    oklch(0 0 0 / 68%) 88%,
+    oklch(1 0 0) 100%
   );
   -webkit-mask-image: radial-gradient(
     circle var(--r) at var(--x) var(--y),
     transparent 0%,
     transparent 15%,
-    rgba(0, 0, 0, 0.1) 30%,
-    rgba(0, 0, 0, 0.22) 45%,
-    rgba(0, 0, 0, 0.35) 60%,
-    rgba(0, 0, 0, 0.5) 75%,
-    rgba(0, 0, 0, 0.68) 88%,
-    white 100%
+    oklch(0 0 0 / 10%) 30%,
+    oklch(0 0 0 / 22%) 45%,
+    oklch(0 0 0 / 35%) 60%,
+    oklch(0 0 0 / 50%) 75%,
+    oklch(0 0 0 / 68%) 88%,
+    oklch(1 0 0) 100%
   );
 }
 
@@ -1600,24 +1600,24 @@ body {
 
   mask-image: radial-gradient(
     circle var(--r) at var(--x) var(--y),
-    white 0%,
-    white 15%,
-    rgba(255, 255, 255, 0.9) 30%,
-    rgba(255, 255, 255, 0.78) 45%,
-    rgba(255, 255, 255, 0.65) 60%,
-    rgba(255, 255, 255, 0.5) 75%,
-    rgba(255, 255, 255, 0.32) 88%,
+    oklch(1 0 0) 0%,
+    oklch(1 0 0) 15%,
+    oklch(1 0 0 / 90%) 30%,
+    oklch(1 0 0 / 78%) 45%,
+    oklch(1 0 0 / 65%) 60%,
+    oklch(1 0 0 / 50%) 75%,
+    oklch(1 0 0 / 32%) 88%,
     transparent 100%
   );
   -webkit-mask-image: radial-gradient(
     circle var(--r) at var(--x) var(--y),
-    white 0%,
-    white 15%,
-    rgba(255, 255, 255, 0.9) 30%,
-    rgba(255, 255, 255, 0.78) 45%,
-    rgba(255, 255, 255, 0.65) 60%,
-    rgba(255, 255, 255, 0.5) 75%,
-    rgba(255, 255, 255, 0.32) 88%,
+    oklch(1 0 0) 0%,
+    oklch(1 0 0) 15%,
+    oklch(1 0 0 / 90%) 30%,
+    oklch(1 0 0 / 78%) 45%,
+    oklch(1 0 0 / 65%) 60%,
+    oklch(1 0 0 / 50%) 75%,
+    oklch(1 0 0 / 32%) 88%,
     transparent 100%
   );
 
