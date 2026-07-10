@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 4. Modals Setup
     setupProfileModal(supabase, session.user);
     setupWikiModals(supabase, session.user);
+    setupWikiBot(supabase);
     setupHomeManagement(supabase, currentUserRole);
 
     // Déconnexion
@@ -451,10 +452,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       servicesGrid.style.display = 'none';
       wikiBotContainer.style.display = 'flex';
       
-      if (!window.animatedListInitialized) {
-        if (typeof initAnimatedActivityList === 'function') initAnimatedActivityList();
-        window.animatedListInitialized = true;
-      }
+      
       
       // Afficher le bouton Créer si Admin
       if (session.user.user_metadata?.role === 'ADMIN' || true) {
@@ -1817,98 +1815,118 @@ function setupHomeManagement(supabase, currentUserRole) {
 
 
 // ============================================================
-// MAGIC UI ANIMATED LIST PORT (VANILLA JS)
+
 // ============================================================
-const dvActivities = [
-  {
-    name: "KPI ARPU consulté",
-    description: "Formule et utilité métier transmises à l'utilisateur.",
-    time: "À l'instant",
-    icon: "📊",
-    color: "#E5007D", // Magenta officiel Virgo
-    type: 'kpi',
-  },
-  {
-    name: "Fiche collaborateur lue",
-    description: "Consultation de l'annuaire interne (Équipe Sénégal).",
-    time: "Il y a 3m",
-    icon: "👤",
-    color: "#2D3139", // Anthracite officiel Digital
-    type: 'team',
-  },
-  {
-    name: "Automatisation Zapier exécutée",
-    description: "Mise à jour automatique du dictionnaire des KPIs depuis Google Sheets.",
-    time: "Il y a 12m",
-    icon: "⚡",
-    color: "#FF4A00", // Orange natif de l'icône Zapier
-    type: 'zapier',
-  },
-  {
-    name: "KPI Churn Rate vérifié",
-    description: "Extraction de la règle métier et des paliers de volume capping.",
-    time: "Il y a 25m",
-    icon: "📈",
-    color: "#E5007D", // Magenta officiel Virgo
-    type: 'kpi',
-  },
-];
+// CHATBOT (OPENAI) AVEC DESIGN MAGIC UI (ACTIVITY CARD)
+// ============================================================
+function setupWikiBot(supabase) {
+  const chatForm = document.getElementById('bot-chat-form');
+  const chatInput = document.getElementById('bot-chat-input');
+  const messagesContainer = document.getElementById('bot-messages');
 
-let activityInterval;
-let activityIndex = 0;
+  if (!chatForm || !chatInput || !messagesContainer) return;
 
-function initAnimatedActivityList() {
-  const container = document.getElementById('dv-activity-list-container');
-  if (!container) return;
-  
-  // Clear any existing interval
-  if (activityInterval) clearInterval(activityInterval);
-  container.innerHTML = '';
-  
-  // Create card DOM element
-  function createCard(item) {
-    const card = document.createElement('div');
-    card.className = 'dv-activity-card';
+  const btnSubmit = chatForm.querySelector('button[type="submit"]');
+
+  const sendMessage = async () => {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    // 1. Add User Message
+    appendMessage('user', message);
+    chatInput.value = '';
+
+    // 2. Add Bot "Typing..." Message
+    const typingId = appendMessage('bot', '...', true);
+
+    try {
+      const response = await fetch('/api/chat.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: message, 
+          vertical: window.currentVertical || 'LIVE' 
+        })
+      });
+
+      const data = await response.json();
+      
+      const typingEl = document.getElementById(typingId);
+      if (typingEl) typingEl.remove();
+
+      if (response.ok && data.reply) {
+        let formattedReply = data.reply
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>');
+        appendMessage('bot', formattedReply);
+      } else {
+        appendMessage('bot', "Erreur : " + (data.error || "Réponse invalide de l'API"));
+      }
+    } catch (err) {
+      const typingEl = document.getElementById(typingId);
+      if (typingEl) typingEl.remove();
+      console.error(err);
+      appendMessage('bot', "Erreur de connexion au serveur d'IA.");
+    }
+  };
+
+  if (btnSubmit) {
+    btnSubmit.addEventListener('click', (e) => {
+      e.preventDefault();
+      sendMessage();
+    });
+  }
+
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // THE MAGIC UI MESSAGE BUBBLE BUILDER
+  function appendMessage(role, text, isTyping = false) {
+    const id = 'msg-' + Date.now();
+    const div = document.createElement('div');
+    div.id = id;
     
-    card.innerHTML = `
-      <div class="dv-activity-card-icon" style="background-color: ${item.color}">
-        ${item.icon}
+    // We use the same CSS classes defined for dv-activity-card
+    div.className = 'dv-activity-card';
+    
+    // Customize based on role
+    const isBot = role === 'bot';
+    const icon = isBot ? '🤖' : '👤';
+    const color = isBot ? '#E5007D' : '#2D3139'; // Magenta vs Anthracite
+    const name = isBot ? 'Assistant IA' : 'Vous';
+    
+    // Current time hh:mm
+    const now = new Date();
+    const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+    // Typing effect logic
+    let descHtml = text;
+    if (isTyping) {
+      descHtml = '<span class="typing-dot">.</span><span class="typing-dot" style="animation-delay:0.2s">.</span><span class="typing-dot" style="animation-delay:0.4s">.</span>';
+    }
+
+    div.innerHTML = `
+      <div class="dv-activity-card-icon" style="background-color: ${color};">
+        ${icon}
       </div>
-      <div class="dv-activity-card-content">
+      <div class="dv-activity-card-content" style="flex: 1;">
         <div class="dv-activity-card-title">
-          <span class="dv-activity-card-name">${item.name}</span>
+          <span class="dv-activity-card-name">${name}</span>
           <span class="dv-activity-card-dot">·</span>
-          <span class="dv-activity-card-time">${item.time}</span>
+          <span class="dv-activity-card-time">${time}</span>
         </div>
-        <div class="dv-activity-card-desc">
-          ${item.description}
+        <div class="dv-activity-card-desc" style="color: var(--foreground); -webkit-line-clamp: unset; font-size: 0.95rem;">
+          ${descHtml}
         </div>
       </div>
     `;
-    return card;
-  }
 
-  // Pre-fill with a few items instantly
-  for (let i = 0; i < 2; i++) {
-    const item = dvActivities[activityIndex % dvActivities.length];
-    const card = createCard(item);
-    container.insertBefore(card, container.firstChild);
-    activityIndex++;
+    messagesContainer.appendChild(div);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    return id;
   }
-
-  // Set interval to simulate live feed (delay 2500ms)
-  activityInterval = setInterval(() => {
-    const item = dvActivities[activityIndex % dvActivities.length];
-    const card = createCard(item);
-    
-    // Insert at the top
-    container.insertBefore(card, container.firstChild);
-    
-    // Keep maximum of 6 cards in DOM to prevent performance issues
-    if (container.children.length > 6) {
-      container.removeChild(container.lastChild);
-    }
-    
-    activityIndex++;
-  }, 2500);
 }
