@@ -825,7 +825,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
       });
     } catch (e) {
-    } catch (e) {
       listBody.innerHTML = `<tr><td colspan="3" style="padding: 2rem; text-align: center; color: var(--destructive);">Impossible de charger les utilisateurs. Vérifiez l'API.</td></tr>`;
     }
   }
