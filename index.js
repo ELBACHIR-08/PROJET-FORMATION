@@ -1194,35 +1194,6 @@ function openWikiReader(wiki) {
   };
 }
 
-        </div>
-        <div style="background: var(--primary); padding: 1rem 1.25rem; border-radius: 12px; border-top-right-radius: 2px; color: white; font-size: 0.95rem; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-          ${text}
-        </div>
-      `;
-    } else {
-      div.style.alignSelf = 'flex-start';
-      
-      const contentStyle = isTyping 
-        ? 'padding: 1rem 1.25rem; color: var(--muted-foreground); font-style: italic;' 
-        : 'padding: 1rem 1.25rem; background: var(--muted); border-radius: 12px; border-top-left-radius: 2px; color: var(--foreground); font-size: 0.95rem; line-height: 1.5;';
-        
-      div.innerHTML = `
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
-        </div>
-        <div style="${contentStyle}">
-          ${isTyping ? '<div class="typing-indicator"><span></span><span></span><span></span></div>' : text}
-        </div>
-      `;
-    }
-
-    messagesContainer.appendChild(div);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    return id;
-  }
-
-} // end setupWikiBot
-
 // ============================================================
 // HOME PAGE MANAGEMENT (PHOTO, ABOUT, COLLABORATORS)
 // Called once after auth, closes over supabase + role
