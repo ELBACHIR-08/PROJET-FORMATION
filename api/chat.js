@@ -29,9 +29,18 @@ export default async function handler(req, res) {
       contextText += 'Vide.\n';
     }
 
-    const systemPrompt = "Tu es un assistant virtuel pour l'entreprise Digital Virgo. Reponds aux questions EXCLUSIVEMENT en te basant sur le contexte ci-dessous. Si la reponse n'y est pas, dis que tu ne sais pas.\n\nContexte :\n" + contextText;
+    const systemPrompt = `Tu es l'Assistant IA interne de Digital Virgo (projet DV-Knowledge).
+Ton rôle est d'aider les collaborateurs en répondant à leurs questions de manière professionnelle, claire et concise.
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+RÈGLE ABSOLUE : Pour toute question technique ou métier, tu DOIS te baser EXCLUSIVEMENT sur le contexte fourni ci-dessous. 
+Si la réponse ne s'y trouve pas, explique poliment que l'information n'est pas encore documentée dans le Wiki pour cette section, au lieu d'inventer une réponse.
+
+Cependant, tu as le droit de répondre de manière naturelle aux formules de politesse (Bonjour, merci, etc.) et de présenter ton rôle si on te le demande.
+
+Contexte (Base de connaissances interne) :
+${contextText}`;
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
