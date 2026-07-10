@@ -19,6 +19,10 @@
   
   <!-- GSAP CDN for ChromaGrid -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <!-- Quill.js for Rich Text Editor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 </head>
 <body>
   <!-- Sidebar -->
@@ -150,9 +154,9 @@
                 <button id="btn-delete-about" style="border: none; background: var(--destructive); color: white; font-size: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Supprimer le texte</button>
               </div>
             </div>
-            <p id="about-text-display" style="font-size: 0.95rem; color: var(--foreground); line-height: 1.7; margin: 0; white-space: pre-wrap; font-family: inherit;">
+            <div id="about-text-display" class="ql-editor" style="font-size: 0.95rem; color: var(--foreground); line-height: 1.7; margin: 0; white-space: pre-wrap; font-family: inherit; padding: 0;">
               Digital Virgo est l’un des principaux spécialistes mondiaux du commerce mobile (Mobile Commerce). Au Sénégal, nos équipes collaborent étroitement avec les opérateurs de télécommunications pour déployer des solutions de monétisation, de divertissement, et de fidélisation innovantes. Ce portail de gestion des connaissances centralise l'intelligence collective de nos verticales opérationnelles (Live, Loyalty, Content, Pass) pour optimiser nos performances au quotidien.
-            </p>
+            </div>
           </div>
           <div id="about-edit-mode" style="display: none;">
             <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--foreground);">Modifier la section À propos</h3>
@@ -162,7 +166,7 @@
             </div>
             <div style="margin-bottom: 1.5rem;">
               <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--foreground);">Texte descriptif</label>
-              <textarea id="about-text-input" style="width: 100%; height: 120px; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; background: var(--background); color: var(--foreground); font-family: inherit; font-size: 0.95rem; resize: vertical; line-height: 1.5;"></textarea>
+              <div id="about-editor-container" style="height: 200px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; background: var(--background); color: var(--foreground); font-family: inherit; font-size: 0.95rem;"></div>
             </div>
             <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
               <button id="btn-cancel-about" style="border: 1px solid var(--border); background: var(--card); color: var(--foreground); font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: 600;">Annuler</button>

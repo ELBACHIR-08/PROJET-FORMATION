@@ -1439,7 +1439,21 @@ function setupHomeManagement(supabase, currentUserRole) {
     const aboutAdminActions = document.getElementById('about-admin-actions');
     
     const aboutTitleInput = document.getElementById('about-title-input');
-    const aboutTextInput = document.getElementById('about-text-input');
+    
+    if (!window.quillAbout && document.getElementById('about-editor-container') && window.Quill) {
+      window.quillAbout = new Quill('#about-editor-container', {
+        theme: 'snow',
+        modules: {
+          toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['clean']
+          ]
+        }
+      });
+    }
 
     if (!supabase) return;
 
@@ -1468,7 +1482,7 @@ function setupHomeManagement(supabase, currentUserRole) {
         `;
       }
       if (aboutTextDisplay) {
-        aboutTextDisplay.textContent = textVal || "Aucune description disponible. Cliquez sur Modifier pour en ajouter une.";
+        aboutTextDisplay.innerHTML = textVal || "Aucune description disponible. Cliquez sur Modifier pour en ajouter une.";
         if (!textVal) {
           aboutTextDisplay.style.fontStyle = 'italic';
         } else {
@@ -1477,7 +1491,7 @@ function setupHomeManagement(supabase, currentUserRole) {
       }
 
       if (aboutTitleInput) aboutTitleInput.value = titleVal;
-      if (aboutTextInput) aboutTextInput.value = textVal;
+      if (window.quillAbout) window.quillAbout.root.innerHTML = textVal;
 
     } catch (err) {
       console.warn("Could not load about section", err);
@@ -1510,7 +1524,7 @@ function setupHomeManagement(supabase, currentUserRole) {
   if (btnSaveAbout && aboutDisplayMode && aboutEditMode) {
     btnSaveAbout.addEventListener('click', async () => {
       const newTitle = document.getElementById('about-title-input').value.trim();
-      const newText = document.getElementById('about-text-input').value.trim();
+      const newText = window.quillAbout ? window.quillAbout.root.innerHTML : '';
 
       try {
         const { error } = await supabase.from('home_settings').upsert([
