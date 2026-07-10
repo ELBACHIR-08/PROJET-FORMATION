@@ -1305,7 +1305,7 @@ function setupWikiBot(supabase) {
 // ============================================================
 function setupHomeManagement(supabase, currentUserRole) {
 
-  // 1. Team Photo Logic (Stack Component)
+  // 1. Team Photo Logic (CircularGallery Component)
   async function loadTeamPhoto() {
     const container = document.getElementById('photo-stack-container');
     const uploadContainer = document.getElementById('team-photo-upload-container');
@@ -1320,10 +1320,10 @@ function setupHomeManagement(supabase, currentUserRole) {
     }
 
     let defaultImages = [
-      "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=500&auto=format",
-      "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=500&auto=format",
-      "https://images.unsplash.com/photo-1452626212852-811d58933cae?q=80&w=500&auto=format",
-      "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?q=80&w=500&auto=format"
+      { image: "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=500&auto=format", text: "Digital Virgo" },
+      { image: "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=500&auto=format", text: "Dakar Office" },
+      { image: "https://images.unsplash.com/photo-1452626212852-811d58933cae?q=80&w=500&auto=format", text: "Innovation" },
+      { image: "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?q=80&w=500&auto=format", text: "Collaboration" }
     ];
 
     try {
@@ -1331,8 +1331,8 @@ function setupHomeManagement(supabase, currentUserRole) {
       if (data && data.publicUrl) {
         const res = await fetch(data.publicUrl, { method: 'HEAD' });
         if (res.ok) {
-          // If custom photo exists, add it as the top card (last element in array)
-          defaultImages.push(data.publicUrl + '?t=' + Date.now());
+          // If custom photo exists, add it as the first element in array
+          defaultImages.unshift({ image: data.publicUrl + '?t=' + Date.now(), text: "Notre Photo" });
           if (btnDeletePhoto && isAdmin) btnDeletePhoto.style.display = 'flex';
         } else {
           if (btnDeletePhoto) btnDeletePhoto.style.display = 'none';
@@ -1342,43 +1342,20 @@ function setupHomeManagement(supabase, currentUserRole) {
       console.warn("Could not load team photo", err);
     }
 
-    let stack = defaultImages.map((src, i) => ({ id: i + 1, src }));
-
-    function renderStack() {
-      // Remove existing cards
-      container.querySelectorAll('.stack-card').forEach(el => el.remove());
-      
-      stack.forEach((card, index) => {
-        const cardEl = document.createElement('div');
-        cardEl.className = 'stack-card';
-        
-        const randomRotate = (Math.random() * 10 - 5);
-        const revIndex = stack.length - index - 1; 
-        
-        const rotateZ = (revIndex * 4) + randomRotate;
-        const scale = 1 + index * 0.06 - stack.length * 0.06;
-        
-        cardEl.style.transform = `scale(${scale}) rotateZ(${rotateZ}deg)`;
-        cardEl.style.zIndex = index;
-        
-        const img = document.createElement('img');
-        img.src = card.src;
-        img.alt = `card-${card.id}`;
-        cardEl.appendChild(img);
-        
-        cardEl.addEventListener('click', () => {
-          // Send clicked card to back
-          const cardIndex = stack.findIndex(c => c.id === card.id);
-          const [removed] = stack.splice(cardIndex, 1);
-          stack.unshift(removed);
-          renderStack();
-        });
-        
-        container.appendChild(cardEl);
-      });
+    container.innerHTML = '';
+    if (window.circularGalleryInstance) {
+      window.circularGalleryInstance.destroy();
     }
 
-    renderStack();
+    if (window.CircularGallery) {
+      window.circularGalleryInstance = await window.CircularGallery.init(container, {
+        items: defaultImages,
+        bend: 3,
+        textColor: '#ffffff',
+        borderRadius: 0.05,
+        font: 'bold 24px Inter'
+      });
+    }
   }
 
   // Setup photo upload input listener
@@ -1562,11 +1539,17 @@ function setupHomeManagement(supabase, currentUserRole) {
     });
   }
 
-  // 3. Collaborators Logic (CircularGallery WebGL)
+  // 3. Collaborators Logic (ChromaGrid)
   async function loadCollaborators() {
     const grid = document.getElementById('collaborators-grid');
     const btnAddCollab = document.getElementById('btn-add-collaborator');
     if (!grid) return;
+
+    // Clean container but make sure overlays remain if they existed, or recreate them
+    grid.innerHTML = `
+      <div class="chroma-overlay"></div>
+      <div class="chroma-fade"></div>
+    `;
 
     const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
     if (isAdmin && btnAddCollab) {
@@ -1581,94 +1564,114 @@ function setupHomeManagement(supabase, currentUserRole) {
 
       if (error) throw error;
 
-      // Clean container
-      grid.innerHTML = '';
-      
-      const items = members.map(m => ({
-        id: m.id,
-        image: m.image_url || `https://i.pravatar.cc/300?u=${m.id}`,
-        text: m.name
-      }));
+      const colors = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
+      const overlay = grid.querySelector('.chroma-overlay');
 
-      // Initialize CircularGallery
-      const galleryContainer = document.createElement('div');
-      galleryContainer.style.height = '600px';
-      galleryContainer.style.position = 'relative';
-      galleryContainer.style.width = '100%';
-      grid.appendChild(galleryContainer);
-
-      if (window.circularGalleryInstance) {
-        window.circularGalleryInstance.destroy();
-      }
-
-      if (window.CircularGallery) {
-        window.circularGalleryInstance = await window.CircularGallery.init(galleryContainer, {
-          items: items,
-          bend: 3,
-          textColor: '#ffffff',
-          borderRadius: 0.05,
-          font: 'bold 30px Inter'
-        });
-      }
-
-      // Option A: Admin deletion Dropdown
-      if (isAdmin && items.length > 0) {
-        const adminPanel = document.createElement('div');
-        adminPanel.style.marginTop = '1.5rem';
-        adminPanel.style.display = 'flex';
-        adminPanel.style.alignItems = 'center';
-        adminPanel.style.gap = '1rem';
-        adminPanel.style.justifyContent = 'center';
-
-        const select = document.createElement('select');
-        select.style.padding = '0.5rem';
-        select.style.borderRadius = '6px';
-        select.style.background = 'var(--background)';
-        select.style.color = 'var(--foreground)';
-        select.style.border = '1px solid var(--border)';
-        select.style.fontFamily = 'inherit';
+      members.forEach((member, index) => {
+        const card = document.createElement('article');
+        card.className = 'chroma-card';
         
-        items.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.id;
-          opt.textContent = item.text;
-          select.appendChild(opt);
+        const borderColor = colors[index % colors.length];
+        const gradient = `linear-gradient(${135 + index * 10}deg, color-mix(in srgb, ${borderColor} 30%, transparent), transparent)`;
+        
+        card.style.setProperty('--card-border', borderColor);
+        card.style.setProperty('--card-gradient', gradient);
+
+        // Admin actions inside card
+        let deleteBtnHTML = '';
+        if (isAdmin) {
+          deleteBtnHTML = `
+            <button class="btn-delete-member" data-id="${member.id}" style="position: absolute; top: 0.75rem; right: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--destructive); cursor: pointer; padding: 0.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;" onmouseover="this.style.background='var(--destructive)'; this.style.color='var(--destructive-foreground)'" onmouseout="this.style.background='transparent'; this.style.color='var(--destructive)'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          `;
+        }
+
+        const imgSrc = member.image_url || `https://i.pravatar.cc/300?u=${member.id}`;
+
+        card.innerHTML = `
+          ${deleteBtnHTML}
+          <div class="chroma-img-wrapper">
+            <img src="${imgSrc}" alt="${member.name}" loading="lazy" />
+          </div>
+          <footer class="chroma-info">
+            <h3 class="name">${member.name}</h3>
+            <span class="handle" style="color:${borderColor}">@${member.name.replace(/\s+/g, '').toLowerCase()}</span>
+            <p class="role" style="grid-column: 1 / -1; font-style:italic;">${member.role} - "${member.motto}"</p>
+          </footer>
+        `;
+
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
         });
 
-        const delBtn = document.createElement('button');
-        delBtn.textContent = 'Supprimer ce collaborateur';
-        delBtn.className = 'btn';
-        delBtn.style.backgroundColor = 'var(--destructive)';
-        delBtn.style.color = 'white';
-        delBtn.style.border = 'none';
-        delBtn.style.padding = '0.5rem 1rem';
-        delBtn.style.borderRadius = '6px';
-        delBtn.style.cursor = 'pointer';
-        delBtn.style.fontWeight = '600';
+        // Delete member click handler
+        if (isAdmin) {
+          const deleteBtn = card.querySelector('.btn-delete-member');
+          deleteBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!confirm(`Voulez-vous vraiment supprimer le collaborateur ${member.name} ?`)) return;
 
-        delBtn.addEventListener('click', async () => {
-          const idToDelete = select.value;
-          const nameToDelete = select.options[select.selectedIndex].text;
-          if (!confirm(`Voulez-vous vraiment supprimer ${nameToDelete} ?`)) return;
+            try {
+              const { error: delErr } = await supabase
+                .from('team_members')
+                .delete()
+                .eq('id', member.id);
 
-          try {
-            const { error: delErr } = await supabase
-              .from('team_members')
-              .delete()
-              .eq('id', idToDelete);
-            
-            if (delErr) throw delErr;
-            await loadCollaborators();
-            alert("Collaborateur supprimé !");
-          } catch (err) {
-            alert("Erreur : " + err.message);
-          }
+              if (delErr) throw delErr;
+
+              await loadCollaborators();
+              alert("Collaborateur supprimé !");
+            } catch (err) {
+              alert("Erreur de suppression : " + err.message);
+            }
+          });
+        }
+
+        if (overlay) {
+          grid.insertBefore(card, overlay);
+        } else {
+          grid.appendChild(card);
+        }
+      });
+
+      // Re-initialize GSAP mouse tracker if required
+      if (window.gsap) {
+        const fadeRef = grid.querySelector('.chroma-fade');
+        const setX = gsap.quickSetter(grid, '--x', 'px');
+        const setY = gsap.quickSetter(grid, '--y', 'px');
+        let pos = { x: 0, y: 0 };
+        
+        const { width, height } = grid.getBoundingClientRect();
+        pos = { x: width / 2, y: height / 2 };
+        setX(pos.x);
+        setY(pos.y);
+
+        grid.addEventListener('pointermove', (e) => {
+          const r = grid.getBoundingClientRect();
+          gsap.to(pos, {
+            x: e.clientX - r.left,
+            y: e.clientY - r.top,
+            duration: 0.45,
+            ease: 'power3.out',
+            onUpdate: () => {
+              setX(pos.x);
+              setY(pos.y);
+            },
+            overwrite: true
+          });
+          if(fadeRef) gsap.to(fadeRef, { opacity: 0, duration: 0.25, overwrite: true });
         });
 
-        adminPanel.appendChild(select);
-        adminPanel.appendChild(delBtn);
-        grid.appendChild(adminPanel);
+        grid.addEventListener('pointerleave', () => {
+          if(fadeRef) gsap.to(fadeRef, { opacity: 1, duration: 0.6, overwrite: true });
+        });
       }
+
     } catch (err) {
       console.warn("Could not load collaborators", err);
     }
