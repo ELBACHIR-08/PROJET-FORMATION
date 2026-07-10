@@ -1515,13 +1515,14 @@ function setupHomeManagement(supabase, currentUserRole) {
     });
   }
 
-  // 3. Collaborators Logic
+  // 3. Collaborators Logic (ChromaGrid)
   async function loadCollaborators() {
     const grid = document.getElementById('collaborators-grid');
     const btnAddCollab = document.getElementById('btn-add-collaborator');
     if (!grid) return;
 
-    grid.innerHTML = '';
+    // Remove only the cards, keeping the overlays intact
+    grid.querySelectorAll('.chroma-card').forEach(c => c.remove());
 
     const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
     if (isAdmin && btnAddCollab) {
@@ -1536,40 +1537,48 @@ function setupHomeManagement(supabase, currentUserRole) {
 
       if (error) throw error;
 
-      members.forEach(member => {
-        const card = document.createElement('div');
-        card.className = 'member-card';
-        card.style.cssText = 'background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: transform 0.2s; position: relative;';
-        
-        // Add hover effect
-        card.addEventListener('mouseover', () => card.style.transform = 'translateY(-4px)');
-        card.addEventListener('mouseout', () => card.style.transform = 'translateY(0)');
+      const colors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+      const overlay = grid.querySelector('.chroma-overlay');
 
-        // Extract initials
-        const nameParts = member.name.trim().split(/\s+/);
-        const firstLetter = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() : '';
-        const secondLetter = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() : '';
-        const initials = `${firstLetter}${secondLetter}`;
+      members.forEach((member, index) => {
+        const card = document.createElement('article');
+        card.className = 'chroma-card';
+        
+        const borderColor = colors[index % colors.length];
+        const gradient = `linear-gradient(${135 + index * 10}deg, ${borderColor}33, #000)`;
+        
+        card.style.setProperty('--card-border', borderColor);
+        card.style.setProperty('--card-gradient', gradient);
 
         // Admin actions inside card
         let deleteBtnHTML = '';
         if (isAdmin) {
           deleteBtnHTML = `
-            <button class="btn-delete-member" data-id="${member.id}" style="position: absolute; top: 0.75rem; right: 0.75rem; background: transparent; border: none; color: var(--destructive); cursor: pointer; padding: 0.25rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" onmouseover="this.style.background='oklch(0.97 0.015 340)'" onmouseout="this.style.background='transparent'">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <button class="btn-delete-member" data-id="${member.id}" style="position: absolute; top: 0.75rem; right: 0.75rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: var(--destructive); cursor: pointer; padding: 0.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;" onmouseover="this.style.background='var(--destructive)'; this.style.color='white'" onmouseout="this.style.background='rgba(0,0,0,0.5)'; this.style.color='var(--destructive)'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             </button>
           `;
         }
 
         card.innerHTML = `
           ${deleteBtnHTML}
-          <div style="width: 70px; height: 70px; border-radius: 50%; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; margin: 0 auto 1rem auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            ${initials}
+          <div class="chroma-img-wrapper">
+            <img src="https://i.pravatar.cc/300?u=${member.id}" alt="${member.name}" loading="lazy" />
           </div>
-          <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0 0 0.25rem 0; color: var(--foreground);">${member.name}</h4>
-          <p style="font-size: 0.75rem; color: var(--destructive); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 0.75rem 0;">${member.role}</p>
-          <p style="font-size: 0.85rem; color: var(--muted-foreground); line-height: 1.5; font-style: italic; margin: 0;">"${member.motto}"</p>
+          <footer class="chroma-info">
+            <h3 class="name">${member.name}</h3>
+            <span class="handle" style="color:${borderColor}">@${member.name.replace(/\s+/g, '').toLowerCase()}</span>
+            <p class="role" style="grid-column: 1 / -1; font-style:italic;">${member.role} - "${member.motto}"</p>
+          </footer>
         `;
+
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.setProperty('--mouse-x', \`${x}px\`);
+          card.style.setProperty('--mouse-y', \`${y}px\`);
+        });
 
         // Delete member click handler
         if (isAdmin) {
@@ -1594,8 +1603,47 @@ function setupHomeManagement(supabase, currentUserRole) {
           });
         }
 
-        grid.appendChild(card);
+        if (overlay) {
+          grid.insertBefore(card, overlay);
+        } else {
+          grid.appendChild(card);
+        }
       });
+
+      // GSAP Grid Tracking Setup
+      if (window.gsap && !grid.dataset.gsapInit) {
+        grid.dataset.gsapInit = 'true';
+        const fadeRef = grid.querySelector('.chroma-fade');
+        const setX = gsap.quickSetter(grid, '--x', 'px');
+        const setY = gsap.quickSetter(grid, '--y', 'px');
+        let pos = { x: 0, y: 0 };
+        
+        // Center initially
+        const { width, height } = grid.getBoundingClientRect();
+        pos = { x: width / 2, y: height / 2 };
+        setX(pos.x);
+        setY(pos.y);
+
+        grid.addEventListener('pointermove', (e) => {
+          const r = grid.getBoundingClientRect();
+          gsap.to(pos, {
+            x: e.clientX - r.left,
+            y: e.clientY - r.top,
+            duration: 0.45,
+            ease: 'power3.out',
+            onUpdate: () => {
+              setX(pos.x);
+              setY(pos.y);
+            },
+            overwrite: true
+          });
+          if(fadeRef) gsap.to(fadeRef, { opacity: 0, duration: 0.25, overwrite: true });
+        });
+
+        grid.addEventListener('pointerleave', () => {
+          if(fadeRef) gsap.to(fadeRef, { opacity: 1, duration: 0.6, overwrite: true });
+        });
+      }
 
     } catch (err) {
       console.warn("Could not load collaborators", err);

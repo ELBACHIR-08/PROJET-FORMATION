@@ -16,6 +16,9 @@
   
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- GSAP CDN for ChromaGrid -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
   <!-- Sidebar -->
@@ -188,7 +191,9 @@
               Ajouter un collaborateur
             </button>
           </div>
-          <div id="collaborators-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+          <div id="collaborators-grid" class="chroma-grid" style="--r: 300px; --cols: 3;">
+            <div class="chroma-overlay"></div>
+            <div id="chroma-fade" class="chroma-fade"></div>
             <!-- Dynamically populated via JS -->
           </div>
         </div>
