@@ -1305,7 +1305,7 @@ function setupWikiBot(supabase) {
 // ============================================================
 function setupHomeManagement(supabase, currentUserRole) {
 
-  // 1. Team Photo Logic (CircularGallery Component)
+  // 1. Team Photo Logic (CircularGallery — URLs stored in home_settings DB)
   async function loadTeamPhoto() {
     const container = document.getElementById('photo-stack-container');
     const uploadContainer = document.getElementById('team-photo-upload-container');
@@ -1318,47 +1318,34 @@ function setupHomeManagement(supabase, currentUserRole) {
       uploadContainer.style.display = 'flex';
     }
 
-    // Default gallery items with team photos
-    let galleryItems = [
+    // Default gallery items
+    const defaultGalleryItems = [
       { image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format", text: "Digital Virgo Sénégal" },
       { image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800&auto=format", text: "Notre Équipe" },
       { image: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format", text: "Dakar Office" },
       { image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=800&auto=format", text: "Collaboration" }
     ];
 
-    // Fetch all uploaded team photos from Supabase Storage
-    try {
-      const { data: fileList, error: listErr } = await supabase.storage
-        .from('avatars')
-        .list('team_photos', { limit: 20, offset: 0, sortBy: { column: 'created_at', order: 'asc' } });
+    let galleryItems = [...defaultGalleryItems];
 
-      if (!listErr && fileList && fileList.length > 0) {
-        const uploadedItems = fileList
-          .filter(f => f.name && !f.name.startsWith('.'))
-          .map(f => {
-            const { data } = supabase.storage.from('avatars').getPublicUrl('team_photos/' + f.name);
-            return {
-              image: data.publicUrl + '?t=' + new Date(f.updated_at || f.created_at).getTime(),
-              text: f.name.replace(/\.\w+$/, '').replace(/_/g, ' ')
-            };
-          });
-        if (uploadedItems.length > 0) {
-          galleryItems = [...uploadedItems, ...galleryItems];
+    // Load uploaded photo URLs from home_settings DB
+    try {
+      const { data: row } = await supabase
+        .from('home_settings')
+        .select('value')
+        .eq('key', 'team_gallery_photos')
+        .single();
+
+      if (row && row.value) {
+        const savedPhotos = JSON.parse(row.value);
+        if (Array.isArray(savedPhotos) && savedPhotos.length > 0) {
+          // Put uploaded photos FIRST in the gallery
+          galleryItems = [...savedPhotos, ...defaultGalleryItems];
           if (btnDeletePhoto && isAdmin) btnDeletePhoto.style.display = 'flex';
-        }
-      } else {
-        // Fallback: try legacy single photo
-        const { data: legacyData } = supabase.storage.from('avatars').getPublicUrl('team_photo.png');
-        if (legacyData && legacyData.publicUrl) {
-          const res = await fetch(legacyData.publicUrl, { method: 'HEAD' });
-          if (res.ok) {
-            galleryItems.unshift({ image: legacyData.publicUrl + '?t=' + Date.now(), text: "Notre Photo" });
-            if (btnDeletePhoto && isAdmin) btnDeletePhoto.style.display = 'flex';
-          }
         }
       }
     } catch (err) {
-      console.warn("Could not load team photos", err);
+      console.warn("Could not load team gallery from DB", err);
     }
 
     // Destroy previous instance if any
@@ -1367,10 +1354,8 @@ function setupHomeManagement(supabase, currentUserRole) {
       window.teamGalleryInstance = null;
     }
 
-    // Clear the container (remove old canvas if any)
     container.innerHTML = '';
 
-    // Initialize CircularGallery — wait for container to be in DOM with dimensions
     if (window.CircularGallery) {
       window.teamGalleryInstance = await window.CircularGallery.init(container, {
         items: galleryItems,
@@ -1382,9 +1367,32 @@ function setupHomeManagement(supabase, currentUserRole) {
         font: 'bold 22px Inter'
       });
     } else {
-      // Fallback: show placeholder message if OGL not loaded
       container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.5);font-size:1rem;">Galerie en cours de chargement…</div>';
     }
+  }
+
+  // Helper: get current saved photos array from DB
+  async function getTeamGalleryPhotos() {
+    try {
+      const { data: row } = await supabase
+        .from('home_settings')
+        .select('value')
+        .eq('key', 'team_gallery_photos')
+        .single();
+      if (row && row.value) {
+        const parsed = JSON.parse(row.value);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  // Helper: save photos array to DB
+  async function saveTeamGalleryPhotos(photos) {
+    const { error } = await supabase.from('home_settings').upsert([
+      { key: 'team_gallery_photos', value: JSON.stringify(photos) }
+    ]);
+    if (error) throw error;
   }
 
   // Setup photo upload input listener
@@ -1400,16 +1408,28 @@ function setupHomeManagement(supabase, currentUserRole) {
       label.style.pointerEvents = 'none';
 
       try {
-        const ext = file.name.split('.').pop();
-        const fileName = `team_photos/${Date.now()}.${ext}`;
+        // 1. Upload file to Supabase Storage
+        const ext = file.name.split('.').pop().toLowerCase();
+        const fileName = `team_photos/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
 
-        const { error } = await supabase.storage
+        const { error: uploadErr } = await supabase.storage
           .from('avatars')
           .upload(fileName, file, { upsert: false, contentType: file.type });
 
-        if (error) throw error;
+        if (uploadErr) throw uploadErr;
 
-        // Reset file input so same file can be re-uploaded if needed
+        // 2. Get the public URL
+        const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        if (!urlData || !urlData.publicUrl) throw new Error("Impossible d'obtenir l'URL publique.");
+
+        // 3. Store URL in DB
+        const currentPhotos = await getTeamGalleryPhotos();
+        currentPhotos.push({
+          image: urlData.publicUrl,
+          text: file.name.replace(/\.\w+$/, '').replace(/[_-]/g, ' ')
+        });
+        await saveTeamGalleryPhotos(currentPhotos);
+
         teamPhotoInput.value = '';
         await loadTeamPhoto();
         alert("Photo ajoutée à la galerie !");
@@ -1422,25 +1442,14 @@ function setupHomeManagement(supabase, currentUserRole) {
     });
   }
 
-  // Setup photo delete listener — removes ALL photos from team_photos folder
+  // Setup photo delete listener — wipes all custom photos from DB
   const btnDeletePhoto = document.getElementById('btn-delete-team-photo');
   if (btnDeletePhoto) {
     btnDeletePhoto.addEventListener('click', async () => {
-      if (!confirm("Supprimer TOUTES les photos de la galerie ? (Les photos par défaut resteront.)")) return;
+      if (!confirm("Supprimer TOUTES vos photos personnalisées de la galerie ? Les photos par défaut resteront.")) return;
 
       try {
-        const { data: fileList, error: listErr } = await supabase.storage
-          .from('avatars')
-          .list('team_photos');
-
-        if (listErr) throw listErr;
-
-        if (fileList && fileList.length > 0) {
-          const paths = fileList.map(f => 'team_photos/' + f.name);
-          const { error: delErr } = await supabase.storage.from('avatars').remove(paths);
-          if (delErr) throw delErr;
-        }
-
+        await saveTeamGalleryPhotos([]);
         await loadTeamPhoto();
         alert("Photos supprimées !");
       } catch (err) {
