@@ -127,14 +127,8 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             Notre Équipe Digital Virgo Sénégal
           </h3>
-          <div style="position: relative; width: 100%; min-height: 280px; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, oklch(0.96 0.01 200) 0%, oklch(0.92 0.02 240) 100%); display: flex; align-items: center; justify-content: center; border: 2px dashed var(--border);">
-            <img id="team-photo-img" src="" alt="Photo d'équipe" style="width: 100%; height: 100%; object-fit: cover; display: none; position: absolute; top: 0; left: 0;">
-            <div id="team-photo-placeholder" style="text-align: center; padding: 3rem; color: var(--muted-foreground);">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem; color: var(--primary);"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-              <p style="font-weight: 600; margin: 0 0 0.5rem 0; color: var(--foreground);">Aucune photo d'équipe disponible</p>
-              <p style="font-size: 0.85rem; margin: 0;">Les administrateurs peuvent ajouter une photo d'équipe.</p>
-            </div>
-            <div id="team-photo-upload-container" style="position: absolute; bottom: 1rem; right: 1rem; display: none; z-index: 5; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
+          <div id="photo-stack-container" style="position: relative; width: 100%; min-height: 350px; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, oklch(0.96 0.01 200) 0%, oklch(0.92 0.02 240) 100%); display: flex; align-items: center; justify-content: center; border: 2px dashed var(--border); perspective: 1000px;">
+            <div id="team-photo-upload-container" style="position: absolute; bottom: 1rem; right: 1rem; display: none; z-index: 50; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
               <label for="team-photo-input" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 600; border-radius: 20px; background: rgba(10,5,40,0.85); backdrop-filter: blur(4px); color: white; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.2s;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 Modifier la photo

@@ -1272,42 +1272,80 @@ function setupWikiBot(supabase) {
 // ============================================================
 function setupHomeManagement(supabase, currentUserRole) {
 
-  // 1. Team Photo Logic
+  // 1. Team Photo Logic (Stack Component)
   async function loadTeamPhoto() {
-    const teamImg = document.getElementById('team-photo-img');
-    const teamPlaceholder = document.getElementById('team-photo-placeholder');
+    const container = document.getElementById('photo-stack-container');
     const uploadContainer = document.getElementById('team-photo-upload-container');
     const btnDeletePhoto = document.getElementById('btn-delete-team-photo');
 
-    if (!supabase) return;
+    if (!supabase || !container) return;
 
     // Check if role is admin to show upload/delete buttons
     const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
-    if (isAdmin) {
-      if (uploadContainer) uploadContainer.style.display = 'flex';
+    if (isAdmin && uploadContainer) {
+      uploadContainer.style.display = 'flex';
     }
+
+    let defaultImages = [
+      "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=500&auto=format",
+      "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=500&auto=format",
+      "https://images.unsplash.com/photo-1452626212852-811d58933cae?q=80&w=500&auto=format",
+      "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?q=80&w=500&auto=format"
+    ];
 
     try {
       const { data } = supabase.storage.from('avatars').getPublicUrl('team_photo.png');
       if (data && data.publicUrl) {
-        // HEAD request to check if file exists
         const res = await fetch(data.publicUrl, { method: 'HEAD' });
         if (res.ok) {
-          if (teamImg) {
-            teamImg.src = data.publicUrl + '?t=' + Date.now(); // Cache busting
-            teamImg.style.display = 'block';
-          }
-          if (teamPlaceholder) teamPlaceholder.style.display = 'none';
+          // If custom photo exists, add it as the top card (last element in array)
+          defaultImages.push(data.publicUrl + '?t=' + Date.now());
           if (btnDeletePhoto && isAdmin) btnDeletePhoto.style.display = 'flex';
         } else {
-          if (teamImg) teamImg.style.display = 'none';
-          if (teamPlaceholder) teamPlaceholder.style.display = 'block';
           if (btnDeletePhoto) btnDeletePhoto.style.display = 'none';
         }
       }
     } catch (err) {
       console.warn("Could not load team photo", err);
     }
+
+    let stack = defaultImages.map((src, i) => ({ id: i + 1, src }));
+
+    function renderStack() {
+      // Remove existing cards
+      container.querySelectorAll('.stack-card').forEach(el => el.remove());
+      
+      stack.forEach((card, index) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'stack-card';
+        
+        const randomRotate = (Math.random() * 10 - 5);
+        const revIndex = stack.length - index - 1; 
+        
+        const rotateZ = (revIndex * 4) + randomRotate;
+        const scale = 1 + index * 0.06 - stack.length * 0.06;
+        
+        cardEl.style.transform = `scale(${scale}) rotateZ(${rotateZ}deg)`;
+        cardEl.style.zIndex = index;
+        
+        const img = document.createElement('img');
+        img.src = card.src;
+        img.alt = `card-${card.id}`;
+        cardEl.appendChild(img);
+        
+        cardEl.addEventListener('click', () => {
+          // Send clicked card to back
+          const cardIndex = stack.findIndex(c => c.id === card.id);
+          const [removed] = stack.splice(cardIndex, 1);
+          stack.unshift(removed);
+          renderStack();
+        });
+        
+        container.appendChild(cardEl);
+      });
+    }
+
+    renderStack();
   }
 
   // Setup photo upload input listener
