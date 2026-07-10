@@ -1767,16 +1767,30 @@ function setupHomeManagement(supabase, currentUserRole) {
       
       const chars = nextText.split('').map(char => {
         const span = document.createElement('span');
+        span.className = 'rotating-text-char';
         span.textContent = char === ' ' ? '\u00A0' : char;
-        span.style.display = 'inline-block';
         span.style.transform = 'translateY(100%)';
         span.style.opacity = '0';
         return span;
       });
 
+      // Get current width before clearing
+      const currentWidth = container.getBoundingClientRect().width;
+
       container.innerHTML = '';
       chars.forEach(span => container.appendChild(span));
 
+      // Measure natural width
+      container.style.width = 'auto';
+      const targetWidth = container.offsetWidth;
+
+      // Animate width transition
+      gsap.fromTo(container, 
+        { width: currentWidth },
+        { width: targetWidth, duration: 0.35, ease: 'power2.out' }
+      );
+
+      // Animate characters In (Spring-like)
       gsap.to(chars, {
         y: '0%',
         opacity: 1,
@@ -1785,6 +1799,7 @@ function setupHomeManagement(supabase, currentUserRole) {
         ease: 'back.out(1.7)',
       });
 
+      // Animate characters Out
       setTimeout(() => {
         gsap.to(chars, {
           y: '-120%',

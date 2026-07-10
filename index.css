@@ -1631,3 +1631,25 @@ body {
   transition: opacity 0.25s ease;
 }
 
+/* Rotating Text styling */
+.rotating-text-badge {
+  background-color: #E5007D;
+  color: #ffffff;
+  overflow: hidden;
+  padding: 0.15rem 0.6rem;
+  border-radius: 6px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+.rotating-text-char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
