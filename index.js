@@ -1776,5 +1776,56 @@ function setupHomeManagement(supabase, currentUserRole) {
   loadTeamPhoto();
   loadAboutSection();
   loadCollaborators();
+  initRotatingText();
+
+  function initRotatingText() {
+    const container = document.getElementById('rotating-text');
+    if (!container || !window.gsap) return;
+
+    const texts = ['Savoir', 'Playbook', 'Wiki', 'Process'];
+    let currentIndex = 0;
+    const interval = 2500;
+    const staggerDuration = 0.02;
+
+    function animateText() {
+      const nextText = texts[currentIndex];
+      
+      const chars = nextText.split('').map(char => {
+        const span = document.createElement('span');
+        span.textContent = char === ' ' ? '\u00A0' : char;
+        span.style.display = 'inline-block';
+        span.style.transform = 'translateY(100%)';
+        span.style.opacity = '0';
+        return span;
+      });
+
+      container.innerHTML = '';
+      chars.forEach(span => container.appendChild(span));
+
+      gsap.to(chars, {
+        y: '0%',
+        opacity: 1,
+        duration: 0.6,
+        stagger: staggerDuration,
+        ease: 'back.out(1.7)',
+      });
+
+      setTimeout(() => {
+        gsap.to(chars, {
+          y: '-120%',
+          opacity: 0,
+          duration: 0.4,
+          stagger: staggerDuration,
+          ease: 'power2.in',
+          onComplete: () => {
+            currentIndex = (currentIndex + 1) % texts.length;
+            animateText();
+          }
+        });
+      }, interval - 400);
+    }
+
+    animateText();
+  }
 
 } // end setupHomeManagement
