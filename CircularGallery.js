@@ -564,22 +564,15 @@ class CircularGalleryApp {
 }
 
 window.CircularGallery = {
-  // Polls until window.ogl or window.OGL is available, then initializes
+  // Uses synchronously loaded window.ogl from ogl.bundle.js
   init: async function(container, options) {
-    // Wait for OGL (max 8 seconds, poll every 100ms)
-    const ogl = await new Promise((resolve, reject) => {
-      let attempts = 0;
-      const check = () => {
-        const lib = window.ogl || window.OGL;
-        if (lib) return resolve(lib);
-        if (++attempts > 80) return reject(new Error('OGL library did not load in time.'));
-        setTimeout(check, 100);
-      };
-      check();
-    });
-
-    // Normalize to window.ogl so the constructor finds it
-    if (!window.ogl) window.ogl = ogl;
+    if (!window.ogl && !window.OGL) {
+      console.error('[CircularGallery] OGL library not found on window.ogl or window.OGL.');
+      return null;
+    }
+    
+    // Normalize to window.ogl
+    if (!window.ogl) window.ogl = window.OGL;
 
     container.classList.add('circular-gallery');
     container.tabIndex = 0;
@@ -587,3 +580,4 @@ window.CircularGallery = {
     return new CircularGalleryApp(container, { ...options, font: fontToUse });
   }
 };
+
