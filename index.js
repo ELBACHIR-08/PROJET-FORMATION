@@ -1337,8 +1337,16 @@ function setupHomeManagement(supabase, currentUserRole) {
         .maybeSingle();
 
       if (row && row.value) {
-        const savedPhotos = JSON.parse(row.value);
+        let savedPhotos = JSON.parse(row.value);
         if (Array.isArray(savedPhotos)) {
+          // Mots motivants pour remplacer les noms de fichiers originaux
+          const motivatingWords = ["Leadership", "Solidarité", "Esprit d'équipe", "Innovation", "Engagement", "Excellence", "Performance", "Créativité"];
+          
+          savedPhotos = savedPhotos.map((photo, index) => ({
+            ...photo,
+            text: motivatingWords[index % motivatingWords.length]
+          }));
+          
           // Overwrite default photos entirely if user has interacted (even if empty)
           galleryItems = savedPhotos;
         }
