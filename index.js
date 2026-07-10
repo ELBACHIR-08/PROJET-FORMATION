@@ -1614,4 +1614,10 @@ function setupHomeManagement(supabase, currentUserRole) {
       }
     });
   }
+
+  // ── Déclenchement initial au chargement de la page ──────────
+  loadTeamPhoto();
+  loadAboutSection();
+  loadCollaborators();
+
 } // end setupHomeManagement
