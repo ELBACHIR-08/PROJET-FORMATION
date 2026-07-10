@@ -1,24 +1,100 @@
-/* Design System Tokens */
 :root {
-  --background: oklch(0.985 0.005 270); /* Very light gray/blue background */
-  --foreground: oklch(0.124 0.046 273.7); /* #0a0528 (Midnight Blue) */
+  /* Éléments de structure et de surface */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.124 0.046 273.7);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.124 0.046 273.7);
-  
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.124 0.046 273.7);
+
+  /* Actions Principales et Secondaires */
   --primary: oklch(0.488 0.243 264.376);
   --primary-foreground: oklch(0.97 0.014 254.604);
-  
-  --destructive: oklch(0.523 0.265 3.32); /* #e20074 (Magenta) */
-  --destructive-foreground: oklch(1 0 0);
-  
-  --muted: oklch(0.96 0.01 270);
-  --muted-foreground: oklch(0.45 0.02 270);
-  
-  --border: oklch(0.93 0.01 270);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+
+  /* États discrets et neutres */
+  --muted: oklch(0.966 0.005 106.5);
+  --muted-foreground: oklch(0.58 0.031 107.3);
+  --accent: oklch(0.966 0.005 106.5);
+  --accent-foreground: oklch(0.228 0.013 107.4);
+
+  /* États Critiques et Alertes */
+  --destructive: oklch(0.523 0.265 3.32);
+  --destructive-foreground: oklch(0.99 0.01 10);
+
+  /* Bordures et Inputs */
+  --border: oklch(0.93 0.007 106.5);
+  --input: oklch(0.93 0.007 106.5);
+  --ring: oklch(0.737 0.021 106.9);
+
+  /* Visualisations de données (Charts) */
+  --chart-1: oklch(0.88 0.011 106.6);
+  --chart-2: oklch(0.58 0.031 107.3);
+  --chart-3: oklch(0.466 0.025 107.3);
+  --chart-4: oklch(0.394 0.023 107.4);
+  --chart-5: oklch(0.286 0.016 107.4);
+
+  /* Structure de Navigation (Sidebar) */
+  --sidebar: oklch(0.988 0.003 106.5);
+  --sidebar-foreground: oklch(0.124 0.046 273.7);
+  --sidebar-primary: oklch(0.546 0.245 262.881);
+  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --sidebar-accent: oklch(0.966 0.005 106.5);
+  --sidebar-accent-foreground: oklch(0.228 0.013 107.4);
+  --sidebar-border: oklch(0.93 0.007 106.5);
+  --sidebar-ring: oklch(0.737 0.021 106.9);
+
+  /* Rayons de courbure */
   --radius: 0.875rem;
-  
-  --sidebar-bg: oklch(1 0 0);
-  --sidebar-border: oklch(0.93 0.01 270);
+}
+
+.dark {
+  /* Éléments de structure et de surface */
+  --background: oklch(0.124 0.046 273.7);
+  --foreground: oklch(0.988 0.003 106.5);
+  --card: oklch(0.18 0.03 273.7);
+  --card-foreground: oklch(0.988 0.003 106.5);
+  --popover: oklch(0.18 0.03 273.7);
+  --popover-foreground: oklch(0.988 0.003 106.5);
+
+  /* Actions Principales et Secondaires */
+  --primary: oklch(0.424 0.199 265.638);
+  --primary-foreground: oklch(0.97 0.014 254.604);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+
+  /* États discrets et neutres */
+  --muted: oklch(0.286 0.016 107.4);
+  --muted-foreground: oklch(0.737 0.021 106.9);
+  --accent: oklch(0.286 0.016 107.4);
+  --accent-foreground: oklch(0.988 0.003 106.5);
+
+  /* États Critiques et Alertes */
+  --destructive: oklch(0.523 0.265 3.32);
+  --destructive-foreground: oklch(0.99 0.01 10);
+
+  /* Bordures et Inputs */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.58 0.031 107.3);
+
+  /* Visualisations de données (Charts) */
+  --chart-1: oklch(0.88 0.011 106.6);
+  --chart-2: oklch(0.58 0.031 107.3);
+  --chart-3: oklch(0.466 0.025 107.3);
+  --chart-4: oklch(0.394 0.023 107.4);
+  --chart-5: oklch(0.286 0.016 107.4);
+
+  /* Structure de Navigation (Sidebar) */
+  --sidebar: oklch(0.15 0.03 273.7);
+  --sidebar-foreground: oklch(0.988 0.003 106.5);
+  --sidebar-primary: oklch(0.623 0.214 259.815);
+  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --sidebar-accent: oklch(0.286 0.016 107.4);
+  --sidebar-accent-foreground: oklch(0.988 0.003 106.5);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.58 0.031 107.3);
 }
 
 * {
@@ -39,25 +115,29 @@ body {
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background-color: var(--sidebar-bg);
+  background-color: var(--sidebar);
   border-right: 1px solid var(--sidebar-border);
   display: flex;
   flex-direction: column;
-  position: fixed;
+  position: sticky;
+  top: 0;
   height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .sidebar-header {
-  padding: 2rem 1.5rem 1.5rem;
+  padding: 1rem 1.5rem 0.75rem;
 }
 
 .sidebar-logo {
-  max-width: 130px;
+  max-width: 95px;
 }
 
 .sidebar-menu-group {
-  margin-top: 1.5rem;
+  margin-top: 0.75rem;
 }
 
 .menu-heading {
@@ -92,7 +172,7 @@ body {
 }
 
 .nav-item.active {
-  background-color: oklch(0.97 0.015 340); /* Light magenta tint */
+  background-color: var(--sidebar-accent);
   color: var(--destructive);
   font-weight: 600;
   border-right: 3px solid var(--destructive);
@@ -114,7 +194,7 @@ body {
 
 .sidebar-user {
   margin-top: auto;
-  padding: 1.5rem;
+  padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
   border-top: 1px solid var(--sidebar-border);
@@ -152,7 +232,7 @@ body {
 /* Main Layout */
 .main-layout {
   flex: 1;
-  margin-left: 250px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -176,12 +256,17 @@ body {
 .page-title {
   font-size: 1.05rem;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  flex-shrink: 0;
 }
 
 .search-bar {
@@ -217,6 +302,36 @@ body {
   justify-content: center;
 }
 
+/* Welcome Banner & Cards */
+.welcome-banner {
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+}
+.welcome-banner:hover {
+  transform: translateY(-4px) scale(1.005);
+  box-shadow: 0 20px 40px rgba(10, 5, 40, 0.25) !important;
+}
+
+.welcome-card {
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.3s ease !important;
+}
+.welcome-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(10, 5, 40, 0.1) !important;
+  border-color: var(--primary) !important;
+}
+.welcome-card:hover h4 {
+  color: var(--primary) !important;
+  transition: color 0.3s ease;
+}
+.welcome-card .icon-container {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.welcome-card:hover .icon-container {
+  transform: scale(1.1);
+  background-color: var(--destructive) !important;
+  color: white !important;
+}
+
 /* Content Area */
 .content-area {
   padding: 2.5rem;
@@ -235,7 +350,13 @@ body {
   margin-bottom: 3rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(10, 5, 40, 0.1);
+  box-shadow: 0 15px 40px rgba(10, 5, 40, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 50px rgba(10, 5, 40, 0.25);
 }
 
 .badge-hero {
@@ -359,6 +480,15 @@ body {
   border-radius: var(--radius);
   padding: 1.75rem 1.25rem;
   box-shadow: 0 4px 15px rgba(10, 5, 40, 0.02);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(10, 5, 40, 0.08);
+  border-color: var(--primary);
 }
 
 .feature-icon {
@@ -833,7 +963,7 @@ body {
 .operator-card {
   background-color: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 20px;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -841,14 +971,17 @@ body {
   justify-content: center;
   text-align: center;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  min-height: 180px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
 .operator-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px) scale(1.02);
   border-color: var(--primary);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08), 0 0 0 2px var(--primary);
 }
 
 .operator-card.active {
@@ -981,4 +1114,303 @@ body {
 #btn-welcome-launch-wiki:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(226, 0, 116, 0.35);
+}
+
+/* =========================================================
+   ADMIN FLOW EDITOR VIEW
+   ========================================================= */
+
+#admin-view {
+  padding-top: 1rem;
+}
+
+.admin-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.5rem;
+}
+
+.admin-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 0.25rem;
+}
+
+.admin-subtitle {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+.admin-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 900px;
+}
+
+.admin-step-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(10, 5, 40, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .admin-step-card {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.admin-badge {
+  background-color: var(--destructive);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+.admin-step-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .admin-step-content {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.admin-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-input-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-input, .admin-textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.admin-input:focus, .admin-textarea:focus {
+  border-color: var(--primary);
+}
+
+.admin-textarea {
+  resize: vertical;
+  min-height: 52px;
+}
+
+.admin-upload-group {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .admin-upload-group {
+    width: auto;
+  }
+}
+
+.admin-file-input {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.admin-file-input::file-selector-button {
+  margin-right: 1rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 100px;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: oklch(0.97 0.01 340);
+  color: var(--destructive);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: inherit;
+}
+
+.admin-file-input::file-selector-button:hover {
+  background-color: oklch(0.95 0.02 340);
+}
+
+.admin-actions {
+  margin-top: 2rem;
+  max-width: 900px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Operator Logos Custom Styling */
+.operator-logo-wrapper {
+  width: 130px;
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  margin-bottom: 1.25rem;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  user-select: none;
+}
+
+/* Orange Logo Box */
+.orange-logo-wrapper {
+  background-color: transparent;
+}
+.orange-logo-box {
+  background-color: #ff6600;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+.orange-logo-text {
+  color: #ffffff;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+/* YAS Logo Shape */
+.yas-logo-wrapper {
+  background: transparent;
+  box-shadow: none;
+}
+.yas-logo-shape {
+  background-color: #0c3370;
+  width: 96px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 45% 55% 50% 50% / 60% 40% 60% 40%;
+  box-shadow: 0 4px 12px rgba(12, 51, 112, 0.3);
+  transform: rotate(-2deg);
+}
+.yas-logo-text {
+  color: #fbc815;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 1.95rem;
+  font-style: italic;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  transform: skewX(-4deg);
+}
+
+/* Expresso Logo Box & Lotus */
+.expresso-logo-wrapper {
+  background: transparent;
+  box-shadow: none;
+}
+.expresso-logo-box {
+  background-color: #4a157d;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(74, 21, 125, 0.25);
+  padding: 8px;
+}
+.expresso-lotus {
+  width: 44px;
+  height: 32px;
+  stroke: #ffffff;
+  stroke-width: 4;
+}
+.expresso-logo-text {
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+/* Ripple and Particle Click Effects */
+.operator-ripple {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  animation: operatorRippleAnim 0.45s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes operatorRippleAnim {
+  to {
+    width: 320px;
+    height: 320px;
+    opacity: 0;
+  }
+}
+
+.operator-particle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 6;
+  animation: particleAnim 0.6s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+}
+
+@keyframes particleAnim {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0);
+    opacity: 0;
+  }
 }

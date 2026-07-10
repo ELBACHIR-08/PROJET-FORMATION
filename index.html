@@ -11,8 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="index.css?v=2">
-  <link rel="stylesheet" href="parcours.css?v=1">
+  <link rel="stylesheet" href="index.css?v=5">
+  <link rel="stylesheet" href="parcours.css?v=2">
   
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -64,14 +64,20 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </div>
     </div>
+    <div style="padding: 0 1.25rem 1.25rem 1.25rem;">
+      <button id="btn-goto-admin" class="btn btn-outline" style="width: 100%; font-size: 0.85rem; padding: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--foreground); border-color: var(--border);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        Gestion des utilisateurs
+      </button>
+    </div>
   </aside>
 
   <!-- Main Content Layout -->
   <div class="main-layout">
     
     <!-- Top Header -->
-    <header class="top-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border);">
-      <div style="display: flex; align-items: center; gap: 1rem;">
+    <header class="top-header" style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 1.5rem; border-bottom: 1px solid var(--border);">
+      <div style="display: flex; align-items: center; gap: 1rem; min-width: 0; overflow: hidden; flex: 1;">
         <h1 class="page-title" id="btn-header-home" style="margin: 0; font-size: 1.5rem; line-height: 1.1; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Système de Gestion des Connaissances</h1>
         <button class="phr-badge phr-badge--format" id="btn-header-wiki" style="margin: 0; font-size: 0.85rem; padding: 0.3rem 0.75rem; background-color: var(--primary); color: white; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; line-height: 1; height: fit-content; border: none; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">WIKI</button>
       </div>
@@ -106,53 +112,84 @@
           <div style="position: absolute; right: 50px; top: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, var(--destructive) 0%, transparent 70%); opacity: 0.3; z-index: 1;"></div>
         </div>
 
-        <!-- Verticals Portal -->
-        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--foreground);">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-          Explorer par Domaine Métier
-        </h3>
-        
-        <div class="welcome-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
-          <!-- LIVE -->
-          <div class="welcome-card" data-vertical="LIVE" style="background: var(--card); border: 1px solid var(--border); padding: 1.75rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; height: 100%;">
-            <div style="width: 42px; height: 42px; border-radius: 10px; background: oklch(0.97 0.015 340); color: var(--destructive); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <!-- Team Photo Frame -->
+        <div class="team-photo-section" style="margin-bottom: 3rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; color: var(--foreground);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Notre Équipe Digital Virgo Sénégal
+          </h3>
+          <div style="position: relative; width: 100%; max-height: 400px; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, oklch(0.96 0.01 200) 0%, oklch(0.92 0.02 240) 100%); display: flex; align-items: center; justify-content: center; border: 2px dashed var(--border);">
+            <img id="team-photo-img" src="" alt="Photo d'équipe" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+            <div id="team-photo-placeholder" style="text-align: center; padding: 3rem; color: var(--muted-foreground);">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem; color: var(--primary);"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              <p style="font-weight: 600; margin: 0 0 0.5rem 0; color: var(--foreground);">Aucune photo d'équipe disponible</p>
+              <p style="font-size: 0.85rem; margin: 0;">Les administrateurs peuvent ajouter une photo d'équipe.</p>
             </div>
-            <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--foreground);">Live</h4>
-            <p style="font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">Opérations temps réel, flux de diffusion et outils de monitoring.</p>
-            <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 0.25rem;">Consulter le Wiki <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-          </div>
-
-          <!-- LOYALTY -->
-          <div class="welcome-card" data-vertical="LOYALTY" style="background: var(--card); border: 1px solid var(--border); padding: 1.75rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; height: 100%;">
-            <div style="width: 42px; height: 42px; border-radius: 10px; background: oklch(0.97 0.015 340); color: var(--destructive); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+            <div id="team-photo-upload-container" style="position: absolute; bottom: 1.5rem; right: 1.5rem; display: none; z-index: 5; gap: 0.5rem;">
+              <label for="team-photo-input" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 600; border-radius: 20px; background: rgba(10,5,40,0.85); backdrop-filter: blur(4px); color: white; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.2s;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                Modifier la photo
+              </label>
+              <input type="file" id="team-photo-input" accept="image/*" style="display: none;">
+              <button id="btn-delete-team-photo" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 600; border-radius: 20px; background: var(--destructive); color: white; border: none; cursor: pointer; transition: all 0.2s;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                Supprimer la photo
+              </button>
             </div>
-            <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--foreground);">Loyalty</h4>
-            <p style="font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">Programmes d'engagement, fidélisation clients et mécaniques de rétention.</p>
-            <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 0.25rem;">Consulter le Wiki <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-          </div>
-
-          <!-- CONTENT -->
-          <div class="welcome-card" data-vertical="CONTENT" style="background: var(--card); border: 1px solid var(--border); padding: 1.75rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; height: 100%;">
-            <div style="width: 42px; height: 42px; border-radius: 10px; background: oklch(0.97 0.015 340); color: var(--destructive); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            </div>
-            <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--foreground);">Content</h4>
-            <p style="font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">Gestion des portails de contenus, licences et partenariats éditoriaux.</p>
-            <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 0.25rem;">Consulter le Wiki <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-          </div>
-
-          <!-- PASS -->
-          <div class="welcome-card" data-vertical="PASS" style="background: var(--card); border: 1px solid var(--border); padding: 1.75rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; height: 100%;">
-            <div style="width: 42px; height: 42px; border-radius: 10px; background: oklch(0.97 0.015 340); color: var(--destructive); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            </div>
-            <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--foreground);">Pass</h4>
-            <p style="font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">Solutions de billetterie, abonnements premium et accès DV-Pass.</p>
-            <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 0.25rem;">Consulter le Wiki <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
           </div>
         </div>
+
+        <!-- À propos de Digital Virgo Sénégal -->
+        <div class="about-section" style="margin-bottom: 3rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.02); position: relative;">
+          <div id="about-display-mode">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h3 id="about-title-display" style="font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--foreground); display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                À propos de Digital Virgo Sénégal
+              </h3>
+              <div id="about-admin-actions" style="display: none; gap: 0.5rem;">
+                <button id="btn-edit-about" style="border: 1px solid var(--border); background: var(--card); color: var(--foreground); font-size: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Modifier</button>
+                <button id="btn-delete-about" style="border: none; background: var(--destructive); color: white; font-size: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Supprimer le texte</button>
+              </div>
+            </div>
+            <p id="about-text-display" style="font-size: 0.95rem; color: var(--muted-foreground); line-height: 1.7; margin: 0;">
+              Digital Virgo est l’un des principaux spécialistes mondiaux du commerce mobile (Mobile Commerce). Au Sénégal, nos équipes collaborent étroitement avec les opérateurs de télécommunications pour déployer des solutions de monétisation, de divertissement, et de fidélisation innovantes. Ce portail de gestion des connaissances centralise l'intelligence collective de nos verticales opérationnelles (Live, Loyalty, Content, Pass) pour optimiser nos performances au quotidien.
+            </p>
+          </div>
+          <div id="about-edit-mode" style="display: none;">
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--foreground);">Modifier la section À propos</h3>
+            <div style="margin-bottom: 1.25rem;">
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--foreground);">Titre</label>
+              <input type="text" id="about-title-input" style="width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; background: var(--background); color: var(--foreground); font-family: inherit; font-size: 0.95rem;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--foreground);">Texte descriptif</label>
+              <textarea id="about-text-input" style="width: 100%; height: 120px; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; background: var(--background); color: var(--foreground); font-family: inherit; font-size: 0.95rem; resize: vertical; line-height: 1.5;"></textarea>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+              <button id="btn-cancel-about" style="border: 1px solid var(--border); background: var(--card); color: var(--foreground); font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: 600;">Annuler</button>
+              <button id="btn-save-about" style="border: none; background: var(--primary); color: white; font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Présentation des collaborateurs -->
+        <div class="team-members-section" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--foreground); display: flex; align-items: center; gap: 0.5rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              Nos Collaborateurs
+            </h3>
+            <button id="btn-add-collaborator" style="display: none; align-items: center; gap: 0.4rem; padding: 0.4rem 0.8rem; font-size: 0.75rem; font-weight: 600; border-radius: 6px; background-color: var(--primary); color: white; border: none; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Ajouter un collaborateur
+            </button>
+          </div>
+          <div id="collaborators-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </div>
       </div>
 
       <!-- View 0: Operator Choice -->
@@ -244,6 +281,40 @@
 
       </div>
 
+      <!-- View 3: Admin Panel (Gestion des Utilisateurs uniquement) -->
+      <div id="admin-view" style="display: none;">
+        <div class="admin-header">
+          <h1 class="admin-title">Administration KMS</h1>
+          <p class="admin-subtitle">Gérez les comptes et les droits d'accès des utilisateurs.</p>
+        </div>
+
+        <!-- Gestion des Utilisateurs (directe, sans onglets) -->
+        <div id="admin-content-utilisateurs">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--foreground);">Utilisateurs Enregistrés</h2>
+            <button id="btn-admin-new-user" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.5rem 1rem;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+              Créer un utilisateur
+            </button>
+          </div>
+
+          <div class="users-table-container" style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border); background-color: rgba(0,0,0,0.02);">
+                  <th style="padding: 1rem; font-weight: 600; color: var(--muted-foreground); font-size: 0.85rem; text-transform: uppercase;">Utilisateur</th>
+                  <th style="padding: 1rem; font-weight: 600; color: var(--muted-foreground); font-size: 0.85rem; text-transform: uppercase;">Rôle</th>
+                  <th style="padding: 1rem; font-weight: 600; color: var(--muted-foreground); font-size: 0.85rem; text-transform: uppercase;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-list">
+                <tr><td colspan="3" style="padding: 2rem; text-align: center; color: var(--muted-foreground);">Chargement des utilisateurs...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </main>
 
     <!-- Footer -->
@@ -265,8 +336,44 @@
   <script src="/env.js"></script>
   <!-- Data (mock) -->
   <script src="/data/services.js"></script>
-  <!-- Main logic -->
-  <script src="index.js?v=4"></script>
+  <!-- Modale : Création d'utilisateur -->
+  <div class="modal-overlay" id="modal-create-user" style="display: none; align-items: center; justify-content: center; z-index: 1000;">
+    <div class="modal-content" style="width: 100%; max-width: 500px; padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 700;">Créer un Utilisateur</h2>
+        <button class="modal-close" id="btn-close-create-user" style="background: none; border: none; cursor: pointer; color: var(--muted-foreground);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <form id="form-create-user">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Prénom et Nom</label>
+          <input type="text" id="new-user-name" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Email</label>
+          <input type="email" id="new-user-email" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Mot de passe temporaire</label>
+          <input type="password" id="new-user-password" required minlength="6" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem;">
+        </div>
+        <div style="margin-bottom: 2rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Rôle d'accès</label>
+          <select id="new-user-role" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem; background: var(--background);">
+            <option value="LECTEUR">LECTEUR (Consultation uniquement)</option>
+            <option value="ADMIN">ADMIN (Gestion des parcours et Wiki)</option>
+            <option value="SUPER_ADMIN">SUPER_ADMIN (Accès total)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" id="btn-submit-create-user" style="width: 100%; padding: 0.85rem;">Créer le compte</button>
+        <p id="create-user-error" style="color: var(--destructive); font-size: 0.85rem; margin-top: 1rem; display: none; text-align: center;"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale : Profil -->
+  <script src="index.js?v=5"></script>
 
   <!-- Profile Settings Modal -->
   <div class="modal-overlay" id="profile-modal" style="display: none;">
@@ -361,6 +468,34 @@
           Télécharger le document
         </a>
       </div>
+    </div>
+  </div>
+
+  <!-- Create Collaborator Modal -->
+  <div class="modal-overlay" id="collaborator-create-modal" style="display: none; align-items: center; justify-content: center; z-index: 1000;">
+    <div class="modal-container" style="max-width: 500px; padding: 2rem;">
+      <button class="modal-close" id="btn-close-collaborator-create"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <h2 class="section-title" style="margin-bottom: 0.5rem;">Ajouter un collaborateur</h2>
+      <p class="section-subtitle" style="margin-bottom: 2rem;">Présentez un nouveau membre de l'équipe sur la page d'accueil.</p>
+
+      <form id="collaborator-create-form">
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="collaborator-name" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Nom complet</label>
+          <input type="text" id="collaborator-name" required placeholder="Ex: Jean Dupont" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="collaborator-role" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Poste / Rôle</label>
+          <input type="text" id="collaborator-role" required placeholder="Ex: Lead Développeur" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 2rem;">
+          <label for="collaborator-motto" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Un joli mot sympa qui le définit</label>
+          <input type="text" id="collaborator-motto" required placeholder="Ex: Passionné par l'innovation..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit;">
+        </div>
+        
+        <button type="submit" id="btn-save-collaborator" class="btn btn-primary" style="width: 100%;">Enregistrer le collaborateur</button>
+      </form>
     </div>
   </div>
 

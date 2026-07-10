@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Vérifier si déjà connecté
   supabase.auth.getSession().then(({ data: { session } }) => {
     if (session) {
-      window.location.href = '/index.html';
+      window.location.href = '/home';
     }
   });
 
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         password: password,
       });
       if (error) throw error;
-      window.location.href = '/index.html';
+      window.location.href = '/home';
     } catch (error) {
       loginErrorMsg.textContent = "Erreur : " + error.message;
       loginErrorMsg.style.display = 'block';
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             last_name: lastName,
             job_title: jobTitle,
             avatar_url: avatarUrl,
-            role: 'ADMIN' // Default to admin for this POC
+            role: 'ADMIN' // Default to ADMIN
           }
         }
       });

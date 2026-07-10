@@ -2,18 +2,67 @@
   "version": 2,
   "cleanUrls": true,
   "builds": [
-    { "src": "api/waitlist.js", "use": "@vercel/node" },
-    { "src": "api/env.js", "use": "@vercel/node" },
-    { "src": "api/chat.js", "use": "@vercel/node" },
-    { "src": "**/*.html", "use": "@vercel/static" },
-    { "src": "**/*.css", "use": "@vercel/static" },
-    { "src": "**/*.js", "use": "@vercel/static" },
-    { "src": "**/*.png", "use": "@vercel/static" }
+    {
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "data/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.png",
+      "use": "@vercel/static"
+    }
   ],
   "routes": [
-    { "src": "/api/waitlist", "dest": "/api/waitlist.js" },
-    { "src": "/api/chat", "dest": "/api/chat.js" },
-    { "src": "/env.js", "dest": "/api/env.js" },
-    { "src": "/(.*)", "dest": "/$1" }
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/env.js",
+      "dest": "/api/env.js"
+    },
+    {
+      "src": "/live(/.*)?",
+      "dest": "/"
+    },
+    {
+      "src": "/loyalty(/.*)?",
+      "dest": "/"
+    },
+    {
+      "src": "/content(/.*)?",
+      "dest": "/"
+    },
+    {
+      "src": "/pass(/.*)?",
+      "dest": "/"
+    },
+    {
+      "src": "/admin(/.*)?",
+      "dest": "/"
+    },
+    {
+      "src": "/home",
+      "dest": "/"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
   ]
 }

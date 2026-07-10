@@ -6,22 +6,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   const supabaseKey = window.ENV?.SUPABASE_ANON_KEY;
   let supabase = null;
   let session = null;
+  let currentUserRole = 'LECTEUR';
 
   if (!supabaseUrl || !supabaseKey) {
     console.error("Supabase config missing!");
   } else {
     supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Protection de la route : redirection si non connecté
-    const { data } = await supabase.auth.getSession();
-    session = data.session;
-    if (!session) {
+    // Auth Check
+    const { data: { session: currentSession }, error: authError } = await supabase.auth.getSession();
+    
+    if (!currentSession) {
       window.location.href = '/login.html';
       return;
     }
 
-    // Affichage des informations utilisateur dans la sidebar
+    session = currentSession;
     const metadata = session.user.user_metadata || {};
+    currentUserRole = metadata.role || 'LECTEUR'; // Default role is LECTEUR
+
+    // Hardcoded Super Admin for the owner (accepts aliases like +test)
+    if (currentSession.user.email && currentSession.user.email.includes('mouhamadouelbachir')) {
+      currentUserRole = 'SUPER_ADMIN';
+    }
+
+    // Hide Admin sidebar button if LECTEUR
+    const btnGotoAdmin = document.getElementById('btn-goto-admin');
+    if (btnGotoAdmin && currentUserRole === 'LECTEUR') {
+      btnGotoAdmin.style.display = 'none';
+    }
+
+    // Affichage des informations utilisateur dans la sidebar
     const avatarElem = document.getElementById('sidebar-user-avatar');
     const nameElem = document.getElementById('sidebar-user-name');
     const roleElem = document.getElementById('sidebar-user-role');
@@ -66,6 +81,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupProfileModal(supabase, session.user);
     setupWikiModals(supabase, session.user);
     setupWikiBot(supabase);
+    loadTeamPhoto(); 
+    loadAboutSection();
+    loadCollaborators();
 
     // Déconnexion
     const btnLogout = document.getElementById('btn-logout');
@@ -89,73 +107,163 @@ document.addEventListener('DOMContentLoaded', async () => {
   const operatorView = document.getElementById('operator-view');
   const dashboardView = document.getElementById('dashboard-view');
   const parcoursView = document.getElementById('parcours-view');
+  const adminView = document.getElementById('admin-view');
   const btnBackOperator = document.getElementById('btn-back-operator');
   const btnBackDashboard = document.getElementById('btn-back-dashboard');
   const operatorsGrid = document.getElementById('operators-grid');
   const servicesGrid = document.getElementById('services-grid');
   const gridTitle = document.getElementById('grid-title');
 
-  // Initial render - Show Welcome page by default
-  if (welcomeView) welcomeView.style.display = 'block';
-  if (operatorView) operatorView.style.display = 'none';
-  if (dashboardView) dashboardView.style.display = 'none';
-  if (parcoursView) parcoursView.style.display = 'none';
+  function slugify(text) {
+    if (!text) return '';
+    return text.toString().toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')           // Replace spaces with -
+      .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+      .replace(/\-\-+/g, '-');        // Replace multiple - with single -
+  }
 
-  // Sidebar clicks (Opens Operator Choice for Parcours Client)
+  // Routing functions
+  function handleRoute(path) {
+    // Reset views
+    if (welcomeView) welcomeView.style.display = 'none';
+    if (operatorView) operatorView.style.display = 'none';
+    if (dashboardView) dashboardView.style.display = 'none';
+    if (parcoursView) parcoursView.style.display = 'none';
+    if (adminView) adminView.style.display = 'none';
+    
+    // Clear sidebar active states
+    document.querySelectorAll('#sidebar-verticals .nav-item').forEach(n => n.classList.remove('active'));
+
+    const cleanPath = path.replace(/\/$/, '').toLowerCase() || '/';
+
+    if (cleanPath === '/' || cleanPath === '/home') {
+      if (welcomeView) welcomeView.style.display = 'block';
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    if (cleanPath === '/admin') {
+      if (currentUserRole === 'LECTEUR') {
+        alert("Accès refusé. Vous n'avez pas les droits d'administration.");
+        navigateTo('/');
+        return;
+      }
+      if (adminView) {
+        adminView.style.display = 'block';
+        loadAdminUsers();
+      }
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    // Parse vertical operator service subrouting
+    const parts = cleanPath.split('/').filter(Boolean);
+    const verticalKey = parts[0].toUpperCase();
+    const verticals = ['LIVE', 'LOYALTY', 'CONTENT', 'PASS'];
+
+    if (verticals.includes(verticalKey)) {
+      currentVertical = verticalKey;
+      window.currentVertical = currentVertical;
+
+      // set sidebar active
+      const activeNav = document.querySelector(`#sidebar-verticals .nav-item[data-vertical="${verticalKey}"]`);
+      if (activeNav) activeNav.classList.add('active');
+
+      const operators = ['Orange Senegal', 'YAS Senegal', 'Expresso Senegal'];
+
+      if (parts[1]) {
+        if (parts[1] === 'wiki') {
+          currentFormat = 'WIKI';
+          currentOperator = null;
+          if (dashboardView) dashboardView.style.display = 'block';
+          renderDashboardGrid();
+        } else {
+          const foundOp = operators.find(op => slugify(op) === parts[1]);
+          if (foundOp) {
+            currentOperator = foundOp;
+            currentFormat = 'PARCOURS_CLIENT';
+
+            if (parts[2]) {
+              const serviceId = parts[2];
+              if (parcoursView) parcoursView.style.display = 'block';
+              loadParcoursView(serviceId);
+            } else {
+              if (dashboardView) dashboardView.style.display = 'block';
+              renderDashboardGrid();
+            }
+          } else {
+            currentOperator = null;
+            if (operatorView) operatorView.style.display = 'block';
+            renderOperatorGrid();
+          }
+        }
+      } else {
+        currentOperator = null;
+        currentFormat = 'PARCOURS_CLIENT';
+        if (operatorView) operatorView.style.display = 'block';
+        renderOperatorGrid();
+      }
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    // Default fallback
+    if (welcomeView) welcomeView.style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+
+  function navigateTo(path) {
+    if (window.location.pathname !== path) {
+      history.pushState({}, "", path);
+    }
+    handleRoute(window.location.pathname);
+  }
+
+  window.addEventListener('popstate', () => {
+    handleRoute(window.location.pathname);
+  });
+
+  // Sidebar clicks
   document.querySelectorAll('#sidebar-verticals .nav-item').forEach(el => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
-      document.querySelectorAll('#sidebar-verticals .nav-item').forEach(n => n.classList.remove('active'));
-      el.classList.add('active');
-      currentVertical = el.getAttribute('data-vertical');
-      window.currentVertical = currentVertical;
-      currentFormat = 'PARCOURS_CLIENT'; // Set back to Parcours Client
-      currentOperator = null; // Reset operator
-      if (welcomeView) welcomeView.style.display = 'none';
-      if (operatorView) operatorView.style.display = 'block';
-      if (dashboardView) dashboardView.style.display = 'none';
-      if (parcoursView) parcoursView.style.display = 'none';
-      renderOperatorGrid();
+      const vertical = el.getAttribute('data-vertical').toLowerCase();
+      navigateTo(`/${vertical}`);
     });
   });
 
-  // Header WIKI button click (Goes straight to chatbot)
+  // Header WIKI button click
   const btnHeaderWiki = document.getElementById('btn-header-wiki');
   if (btnHeaderWiki) {
     btnHeaderWiki.addEventListener('click', (e) => {
       e.preventDefault();
-      currentFormat = 'WIKI'; // Switch format to WIKI
-      currentOperator = null;
-      if (welcomeView) welcomeView.style.display = 'none';
-      if (operatorView) operatorView.style.display = 'none';
-      if (dashboardView) dashboardView.style.display = 'block';
-      if (parcoursView) parcoursView.style.display = 'none';
-      renderDashboardGrid();
+      navigateTo(`/${currentVertical.toLowerCase()}/wiki`);
     });
   }
 
-  // Helper function to return to Welcome page
+  // Helper function to return to Home page
   const navigateToHome = () => {
-    // Reset active class from sidebar vertical items since we are returning home
-    document.querySelectorAll('#sidebar-verticals .nav-item').forEach(n => n.classList.remove('active'));
-    
-    if (welcomeView) welcomeView.style.display = 'block';
-    if (operatorView) operatorView.style.display = 'none';
-    if (dashboardView) dashboardView.style.display = 'none';
-    if (parcoursView) parcoursView.style.display = 'none';
-    window.scrollTo(0, 0);
+    navigateTo('/home');
   };
 
-  // Header Title click (returns to Welcome page)
+  // Header Title click
   const btnHeaderHome = document.getElementById('btn-header-home');
   if (btnHeaderHome) {
-    btnHeaderHome.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigateToHome();
+    btnHeaderHome.addEventListener('click', () => {
+      navigateTo('/home');
     });
   }
 
-  // Sidebar Logo click (returns to Welcome page)
+  // Go to Admin page click
+  const btnGotoAdmin = document.getElementById('btn-goto-admin');
+  if (btnGotoAdmin) {
+    btnGotoAdmin.addEventListener('click', () => {
+      navigateTo('/admin');
+    });
+  }
+
+  // Sidebar Logo click
   const btnSidebarLogo = document.getElementById('btn-sidebar-logo');
   if (btnSidebarLogo) {
     btnSidebarLogo.addEventListener('click', (e) => {
@@ -164,46 +272,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Welcome page banner launch button click (Goes straight to chatbot)
+  // Welcome page banner launch button click
   const btnWelcomeLaunchWiki = document.getElementById('btn-welcome-launch-wiki');
   if (btnWelcomeLaunchWiki) {
     btnWelcomeLaunchWiki.addEventListener('click', (e) => {
       e.preventDefault();
-      currentFormat = 'WIKI'; // Switch format to WIKI
-      currentOperator = null;
-      if (welcomeView) welcomeView.style.display = 'none';
-      if (operatorView) operatorView.style.display = 'none';
-      if (dashboardView) dashboardView.style.display = 'block';
-      if (parcoursView) parcoursView.style.display = 'none';
-      renderDashboardGrid();
+      navigateTo(`/${currentVertical.toLowerCase()}/wiki`);
     });
   }
 
-  // Welcome page vertical cards click (Opens Operator Choice for Parcours Client)
+  // Welcome page vertical cards click
   document.querySelectorAll('.welcome-card').forEach(card => {
     card.addEventListener('click', (e) => {
       e.preventDefault();
       const vertical = card.getAttribute('data-vertical');
       if (vertical) {
-        currentVertical = vertical;
-        window.currentVertical = currentVertical;
-        
-        // Update sidebar active link state
-        document.querySelectorAll('#sidebar-verticals .nav-item').forEach(n => {
-          n.classList.remove('active');
-          if (n.getAttribute('data-vertical') === vertical) {
-            n.classList.add('active');
-          }
-        });
-        
-        currentFormat = 'PARCOURS_CLIENT'; // Set back to Parcours Client
-        currentOperator = null;
-        if (welcomeView) welcomeView.style.display = 'none';
-        if (operatorView) operatorView.style.display = 'block';
-        if (dashboardView) dashboardView.style.display = 'none';
-        if (parcoursView) parcoursView.style.display = 'none';
-        renderOperatorGrid();
-        window.scrollTo(0, 0);
+        navigateTo(`/${vertical.toLowerCase()}`);
       }
     });
   });
@@ -211,21 +295,54 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Operator back button click listener
   if (btnBackOperator) {
     btnBackOperator.addEventListener('click', () => {
-      currentOperator = null;
-      if (welcomeView) welcomeView.style.display = 'none';
-      if (operatorView) operatorView.style.display = 'block';
-      if (dashboardView) dashboardView.style.display = 'none';
-      if (parcoursView) parcoursView.style.display = 'none';
-      window.scrollTo(0, 0);
+      navigateTo(`/${currentVertical.toLowerCase()}`);
     });
   }
 
   if (btnBackDashboard) {
     btnBackDashboard.addEventListener('click', () => {
-      if (parcoursView) parcoursView.style.display = 'none';
-      if (dashboardView) dashboardView.style.display = 'block';
-      window.scrollTo(0, 0);
+      navigateTo(`/${currentVertical.toLowerCase()}/${slugify(currentOperator)}`);
     });
+  }
+
+  function getOperatorLogoHTML(opName) {
+    if (opName.includes('Orange')) {
+      return `
+        <div class="operator-logo-wrapper orange-logo-wrapper">
+          <div class="orange-logo-box">
+            <span class="orange-logo-text">orange</span>
+          </div>
+        </div>
+      `;
+    } else if (opName.includes('YAS')) {
+      return `
+        <div class="operator-logo-wrapper yas-logo-wrapper">
+          <div class="yas-logo-shape">
+            <span class="yas-logo-text">Yas</span>
+          </div>
+        </div>
+      `;
+    } else if (opName.includes('Expresso')) {
+      return `
+        <div class="operator-logo-wrapper expresso-logo-wrapper">
+          <div class="expresso-logo-box">
+            <svg class="expresso-lotus" viewBox="0 0 100 80" fill="none" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">
+              <path d="M50,70 C55,45 55,20 50,10 C45,20 45,45 50,70 Z" fill="none" />
+              <path d="M50,70 C35,50 30,30 40,22 C45,26 48,45 50,70 Z" fill="none" />
+              <path d="M50,70 C65,50 70,30 60,22 C55,26 52,45 50,70 Z" fill="none" />
+              <path d="M50,70 C20,55 15,40 25,35 C32,38 42,52 50,70 Z" fill="none" />
+              <path d="M50,70 C80,55 85,40 75,35 C68,38 58,52 50,70 Z" fill="none" />
+            </svg>
+            <span class="expresso-logo-text">expresso</span>
+          </div>
+        </div>
+      `;
+    }
+    return `
+      <div class="operator-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+      </div>
+    `;
   }
 
   function renderOperatorGrid() {
@@ -236,19 +353,54 @@ document.addEventListener('DOMContentLoaded', async () => {
       const card = document.createElement('div');
       card.className = 'operator-card';
       card.innerHTML = `
-        <div class="operator-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-        </div>
+        ${getOperatorLogoHTML(op)}
         <div class="operator-title">${op}</div>
         <div class="operator-subtitle">Explorer les services ${currentVertical}</div>
       `;
       
-      card.addEventListener('click', () => {
-        currentOperator = op;
-        operatorView.style.display = 'none';
-        dashboardView.style.display = 'block';
-        window.scrollTo(0, 0);
-        renderDashboardGrid();
+      card.addEventListener('click', (e) => {
+        // Create ripple effect
+        const rect = card.getBoundingClientRect();
+        const ripple = document.createElement('div');
+        ripple.className = 'operator-ripple';
+        ripple.style.left = `${e.clientX - rect.left}px`;
+        ripple.style.top = `${e.clientY - rect.top}px`;
+        card.appendChild(ripple);
+
+        // Create particles
+        for (let i = 0; i < 12; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'operator-particle';
+          if (op.includes('Orange')) {
+            particle.style.background = '#ff6600';
+          } else if (op.includes('YAS')) {
+            particle.style.background = '#fbc815';
+          } else {
+            particle.style.background = '#8a3ab9';
+          }
+          
+          const angle = (i / 12) * Math.PI * 2;
+          const velocity = 50 + Math.random() * 50;
+          const tx = Math.cos(angle) * velocity;
+          const ty = Math.sin(angle) * velocity;
+          
+          particle.style.setProperty('--tx', `${tx}px`);
+          particle.style.setProperty('--ty', `${ty}px`);
+          particle.style.left = `${e.clientX - rect.left}px`;
+          particle.style.top = `${e.clientY - rect.top}px`;
+          
+          card.appendChild(particle);
+          setTimeout(() => particle.remove(), 600);
+        }
+
+        // Card press animation
+        card.style.transform = 'scale(0.92)';
+        card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+        
+        setTimeout(() => {
+          ripple.remove();
+          navigateTo(`/${currentVertical.toLowerCase()}/${slugify(op)}`);
+        }, 350);
       });
       
       operatorsGrid.appendChild(card);
@@ -311,15 +463,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         <h4 class="feature-title" style="margin-top: 1rem;">${service.title}</h4>
         <p class="feature-text">${service.description.substring(0, 80)}...</p>
         <div style="margin-top: 1.5rem; color: var(--primary); font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-          Configurer les captures <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          Voir les captures &amp; Mockups <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </div>
       `;
 
-      card.addEventListener('click', async () => {
-        dashboardView.style.display = 'none';
-        parcoursView.style.display = 'block';
-        window.scrollTo(0, 0);
-        await loadParcoursView(service.id);
+      card.addEventListener('click', () => {
+        navigateTo(`/${currentVertical.toLowerCase()}/${slugify(currentOperator)}/${service.id}`);
       });
 
       servicesGrid.appendChild(card);
@@ -608,6 +757,105 @@ document.addEventListener('DOMContentLoaded', async () => {
     img.src = imageUrl;
     img.alt = 'Screenshot';
   }
+
+  // --------------------------------------------------------
+  // ADMIN VIEW LOGIC
+  // --------------------------------------------------------
+
+  // User Management Logic
+  async function loadAdminUsers() {
+    const listBody = document.getElementById('admin-users-list');
+    if (!listBody) return;
+    try {
+      const response = await fetch('/api/users');
+      if (!response.ok) throw new Error("Erreur de récupération");
+      const users = await response.json();
+      
+      listBody.innerHTML = '';
+      users.forEach(u => {
+        const meta = u.user_metadata || {};
+        const role = meta.role || 'LECTEUR';
+        const roleColor = role === 'SUPER_ADMIN' ? 'var(--destructive)' : (role === 'ADMIN' ? 'var(--primary)' : 'var(--muted-foreground)');
+        
+        listBody.innerHTML += `
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 1rem;">
+              <div style="font-weight: 600;">${meta.first_name || ''} ${meta.last_name || ''}</div>
+              <div style="font-size: 0.85rem; color: var(--muted-foreground);">${u.email}</div>
+            </td>
+            <td style="padding: 1rem;">
+              <span style="background-color: ${roleColor}; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${role}</span>
+            </td>
+            <td style="padding: 1rem;">
+              <button class="btn btn-outline" style="font-size: 0.75rem; padding: 0.3rem 0.5rem;">Modifier</button>
+            </td>
+          </tr>
+        `;
+      });
+    } catch (e) {
+      listBody.innerHTML = `<tr><td colspan="3" style="padding: 2rem; text-align: center; color: var(--destructive);">Impossible de charger les utilisateurs. Vérifiez l'API.</td></tr>`;
+    }
+  }
+
+  // Create User Modal Logic
+  const modalCreateUser = document.getElementById('modal-create-user');
+  const btnNewUser = document.getElementById('btn-admin-new-user');
+  const btnCloseCreateUser = document.getElementById('btn-close-create-user');
+  const formCreateUser = document.getElementById('form-create-user');
+  const createUserError = document.getElementById('create-user-error');
+  const btnSubmitCreateUser = document.getElementById('btn-submit-create-user');
+
+  if (btnNewUser && modalCreateUser) {
+    btnNewUser.addEventListener('click', () => {
+      modalCreateUser.style.display = 'flex';
+      createUserError.style.display = 'none';
+      formCreateUser.reset();
+    });
+  }
+  if (btnCloseCreateUser) {
+    btnCloseCreateUser.addEventListener('click', (e) => {
+      e.preventDefault();
+      modalCreateUser.style.display = 'none';
+    });
+  }
+
+  if (formCreateUser) {
+    formCreateUser.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      createUserError.style.display = 'none';
+      btnSubmitCreateUser.disabled = true;
+      btnSubmitCreateUser.textContent = 'Création...';
+      
+      const name = document.getElementById('new-user-name').value;
+      const email = document.getElementById('new-user-email').value;
+      const password = document.getElementById('new-user-password').value;
+      const role = document.getElementById('new-user-role').value;
+      
+      try {
+        const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, name, role })
+        });
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Erreur inconnue");
+        
+        modalCreateUser.style.display = 'none';
+        alert("Utilisateur créé avec succès !");
+        loadAdminUsers();
+      } catch (err) {
+        createUserError.textContent = err.message;
+        createUserError.style.display = 'block';
+      } finally {
+        btnSubmitCreateUser.disabled = false;
+        btnSubmitCreateUser.textContent = 'Créer le compte';
+      }
+    });
+  }
+
+  // Initial render based on URL
+  handleRoute(window.location.pathname);
 });
 
 // Profile Modal Setup Function
@@ -1016,5 +1264,352 @@ function setupWikiBot(supabase) {
     messagesContainer.appendChild(div);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     return id;
+  }
+
+  // --------------------------------------------------------
+  // HOME PAGE MANAGEMENT (PHOTO, ABOUT, COLLABORATORS)
+  // --------------------------------------------------------
+
+  // 1. Team Photo Logic
+  async function loadTeamPhoto() {
+    const teamImg = document.getElementById('team-photo-img');
+    const teamPlaceholder = document.getElementById('team-photo-placeholder');
+    const uploadContainer = document.getElementById('team-photo-upload-container');
+    const btnDeletePhoto = document.getElementById('btn-delete-team-photo');
+
+    if (!supabase) return;
+
+    // Check if role is admin to show upload/delete buttons
+    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
+    if (isAdmin) {
+      if (uploadContainer) uploadContainer.style.display = 'flex';
+    }
+
+    try {
+      const { data } = supabase.storage.from('avatars').getPublicUrl('team_photo.png');
+      if (data && data.publicUrl) {
+        // HEAD request to check if file exists
+        const res = await fetch(data.publicUrl, { method: 'HEAD' });
+        if (res.ok) {
+          if (teamImg) {
+            teamImg.src = data.publicUrl + '?t=' + Date.now(); // Cache busting
+            teamImg.style.display = 'block';
+          }
+          if (teamPlaceholder) teamPlaceholder.style.display = 'none';
+          if (btnDeletePhoto && isAdmin) btnDeletePhoto.style.display = 'flex';
+        } else {
+          if (teamImg) teamImg.style.display = 'none';
+          if (teamPlaceholder) teamPlaceholder.style.display = 'block';
+          if (btnDeletePhoto) btnDeletePhoto.style.display = 'none';
+        }
+      }
+    } catch (err) {
+      console.warn("Could not load team photo", err);
+    }
+  }
+
+  // Setup photo upload input listener
+  const teamPhotoInput = document.getElementById('team-photo-input');
+  if (teamPhotoInput) {
+    teamPhotoInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const label = document.querySelector('label[for="team-photo-input"]');
+      const originalText = label.innerHTML;
+      label.innerHTML = "Téléchargement...";
+      label.style.pointerEvents = 'none';
+
+      try {
+        const { error } = await supabase.storage
+          .from('avatars')
+          .upload('team_photo.png', file, {
+            upsert: true,
+            contentType: file.type
+          });
+
+        if (error) throw error;
+
+        await loadTeamPhoto();
+        alert("Photo d'équipe mise à jour avec succès !");
+      } catch (err) {
+        alert("Erreur lors du téléchargement : " + err.message);
+      } finally {
+        label.innerHTML = originalText;
+        label.style.pointerEvents = 'auto';
+      }
+    });
+  }
+
+  // Setup photo delete listener
+  const btnDeletePhoto = document.getElementById('btn-delete-team-photo');
+  if (btnDeletePhoto) {
+    btnDeletePhoto.addEventListener('click', async () => {
+      if (!confirm("Voulez-vous vraiment supprimer la photo d'équipe ?")) return;
+
+      try {
+        const { error } = await supabase.storage.from('avatars').remove(['team_photo.png']);
+        if (error) throw error;
+
+        await loadTeamPhoto();
+        alert("Photo d'équipe supprimée !");
+      } catch (err) {
+        alert("Erreur lors de la suppression : " + err.message);
+      }
+    });
+  }
+
+  // 2. À propos Section Logic
+  async function loadAboutSection() {
+    const aboutTitleDisplay = document.getElementById('about-title-display');
+    const aboutTextDisplay = document.getElementById('about-text-display');
+    const aboutAdminActions = document.getElementById('about-admin-actions');
+    
+    const aboutTitleInput = document.getElementById('about-title-input');
+    const aboutTextInput = document.getElementById('about-text-input');
+
+    if (!supabase) return;
+
+    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
+    if (isAdmin && aboutAdminActions) {
+      aboutAdminActions.style.display = 'flex';
+    }
+
+    try {
+      const { data: settings, error } = await supabase
+        .from('home_settings')
+        .select('*');
+
+      if (error) throw error;
+
+      const titleSetting = settings.find(s => s.key === 'about_title');
+      const textSetting = settings.find(s => s.key === 'about_text');
+
+      const titleVal = titleSetting ? titleSetting.value : "À propos de Digital Virgo Sénégal";
+      const textVal = textSetting ? textSetting.value : "";
+
+      if (aboutTitleDisplay) {
+        aboutTitleDisplay.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          ${titleVal || 'À propos'}
+        `;
+      }
+      if (aboutTextDisplay) {
+        aboutTextDisplay.textContent = textVal || "Aucune description disponible. Cliquez sur Modifier pour en ajouter une.";
+        if (!textVal) {
+          aboutTextDisplay.style.fontStyle = 'italic';
+        } else {
+          aboutTextDisplay.style.fontStyle = 'normal';
+        }
+      }
+
+      if (aboutTitleInput) aboutTitleInput.value = titleVal;
+      if (aboutTextInput) aboutTextInput.value = textVal;
+
+    } catch (err) {
+      console.warn("Could not load about section", err);
+    }
+  }
+
+  // Edit / Cancel / Save / Delete About Section Handlers
+  const btnEditAbout = document.getElementById('btn-edit-about');
+  const btnCancelAbout = document.getElementById('btn-cancel-about');
+  const btnSaveAbout = document.getElementById('btn-save-about');
+  const btnDeleteAbout = document.getElementById('btn-delete-about');
+  
+  const aboutDisplayMode = document.getElementById('about-display-mode');
+  const aboutEditMode = document.getElementById('about-edit-mode');
+
+  if (btnEditAbout && aboutDisplayMode && aboutEditMode) {
+    btnEditAbout.addEventListener('click', () => {
+      aboutDisplayMode.style.display = 'none';
+      aboutEditMode.style.display = 'block';
+    });
+  }
+
+  if (btnCancelAbout && aboutDisplayMode && aboutEditMode) {
+    btnCancelAbout.addEventListener('click', () => {
+      aboutDisplayMode.style.display = 'block';
+      aboutEditMode.style.display = 'none';
+    });
+  }
+
+  if (btnSaveAbout && aboutDisplayMode && aboutEditMode) {
+    btnSaveAbout.addEventListener('click', async () => {
+      const newTitle = document.getElementById('about-title-input').value.trim();
+      const newText = document.getElementById('about-text-input').value.trim();
+
+      try {
+        const { error } = await supabase.from('home_settings').upsert([
+          { key: 'about_title', value: newTitle },
+          { key: 'about_text', value: newText }
+        ]);
+
+        if (error) throw error;
+
+        await loadAboutSection();
+        aboutDisplayMode.style.display = 'block';
+        aboutEditMode.style.display = 'none';
+      } catch (err) {
+        alert("Erreur lors de l'enregistrement : " + err.message);
+      }
+    });
+  }
+
+  if (btnDeleteAbout) {
+    btnDeleteAbout.addEventListener('click', async () => {
+      if (!confirm("Voulez-vous vraiment supprimer le texte descriptif ?")) return;
+
+      try {
+        const { error } = await supabase.from('home_settings').upsert([
+          { key: 'about_text', value: '' }
+        ]);
+
+        if (error) throw error;
+
+        await loadAboutSection();
+        alert("Description supprimée !");
+      } catch (err) {
+        alert("Erreur : " + err.message);
+      }
+    });
+  }
+
+  // 3. Collaborators Logic
+  async function loadCollaborators() {
+    const grid = document.getElementById('collaborators-grid');
+    const btnAddCollab = document.getElementById('btn-add-collaborator');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
+    if (isAdmin && btnAddCollab) {
+      btnAddCollab.style.display = 'flex';
+    }
+
+    try {
+      const { data: members, error } = await supabase
+        .from('team_members')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      members.forEach(member => {
+        const card = document.createElement('div');
+        card.className = 'member-card';
+        card.style.cssText = 'background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: transform 0.2s; position: relative;';
+        
+        // Add hover effect
+        card.addEventListener('mouseover', () => card.style.transform = 'translateY(-4px)');
+        card.addEventListener('mouseout', () => card.style.transform = 'translateY(0)');
+
+        // Extract initials
+        const nameParts = member.name.trim().split(/\s+/);
+        const firstLetter = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() : '';
+        const secondLetter = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() : '';
+        const initials = `${firstLetter}${secondLetter}`;
+
+        // Admin actions inside card
+        let deleteBtnHTML = '';
+        if (isAdmin) {
+          deleteBtnHTML = `
+            <button class="btn-delete-member" data-id="${member.id}" style="position: absolute; top: 0.75rem; right: 0.75rem; background: transparent; border: none; color: var(--destructive); cursor: pointer; padding: 0.25rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" onmouseover="this.style.background='oklch(0.97 0.015 340)'" onmouseout="this.style.background='transparent'">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          `;
+        }
+
+        card.innerHTML = `
+          ${deleteBtnHTML}
+          <div style="width: 70px; height: 70px; border-radius: 50%; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; margin: 0 auto 1rem auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            ${initials}
+          </div>
+          <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0 0 0.25rem 0; color: var(--foreground);">${member.name}</h4>
+          <p style="font-size: 0.75rem; color: var(--destructive); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 0.75rem 0;">${member.role}</p>
+          <p style="font-size: 0.85rem; color: var(--muted-foreground); line-height: 1.5; font-style: italic; margin: 0;">"${member.motto}"</p>
+        `;
+
+        // Delete member click handler
+        if (isAdmin) {
+          const deleteBtn = card.querySelector('.btn-delete-member');
+          deleteBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!confirm(`Voulez-vous vraiment supprimer le collaborateur ${member.name} ?`)) return;
+
+            try {
+              const { error: delErr } = await supabase
+                .from('team_members')
+                .delete()
+                .eq('id', member.id);
+
+              if (delErr) throw delErr;
+
+              await loadCollaborators();
+              alert("Collaborateur supprimé !");
+            } catch (err) {
+              alert("Erreur de suppression : " + err.message);
+            }
+          });
+        }
+
+        grid.appendChild(card);
+      });
+
+    } catch (err) {
+      console.warn("Could not load collaborators", err);
+    }
+  }
+
+  // Collaborator Create Modal Trigger & Setup
+  const btnAddCollabTrigger = document.getElementById('btn-add-collaborator');
+  const modalCollabCreate = document.getElementById('collaborator-create-modal');
+  const btnCloseCollabCreate = document.getElementById('btn-close-collaborator-create');
+  const formCollabCreate = document.getElementById('collaborator-create-form');
+
+  if (btnAddCollabTrigger && modalCollabCreate) {
+    btnAddCollabTrigger.addEventListener('click', () => {
+      modalCollabCreate.style.display = 'flex';
+    });
+  }
+
+  if (btnCloseCollabCreate && modalCollabCreate) {
+    btnCloseCollabCreate.addEventListener('click', () => {
+      modalCollabCreate.style.display = 'none';
+      if (formCollabCreate) formCollabCreate.reset();
+    });
+  }
+
+  if (formCollabCreate && modalCollabCreate) {
+    formCollabCreate.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('collaborator-name').value.trim();
+      const role = document.getElementById('collaborator-role').value.trim();
+      const motto = document.getElementById('collaborator-motto').value.trim();
+
+      const btnSave = document.getElementById('btn-save-collaborator');
+      btnSave.disabled = true;
+      btnSave.textContent = "Enregistrement...";
+
+      try {
+        const { error } = await supabase.from('team_members').insert([
+          { name, role, motto }
+        ]);
+
+        if (error) throw error;
+
+        await loadCollaborators();
+        modalCollabCreate.style.display = 'none';
+        formCollabCreate.reset();
+        alert("Collaborateur ajouté avec succès !");
+      } catch (err) {
+        alert("Erreur lors de la création : " + err.message);
+      } finally {
+        btnSave.disabled = false;
+        btnSave.textContent = "Enregistrer le collaborateur";
+      }
+    });
   }
 }
