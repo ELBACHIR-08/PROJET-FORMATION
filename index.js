@@ -81,9 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupProfileModal(supabase, session.user);
     setupWikiModals(supabase, session.user);
     setupWikiBot(supabase);
-    loadTeamPhoto(); 
-    loadAboutSection();
-    loadCollaborators();
+    setupHomeManagement(supabase, currentUserRole);
 
     // Déconnexion
     const btnLogout = document.getElementById('btn-logout');
@@ -1266,9 +1264,13 @@ function setupWikiBot(supabase) {
     return id;
   }
 
-  // --------------------------------------------------------
-  // HOME PAGE MANAGEMENT (PHOTO, ABOUT, COLLABORATORS)
-  // --------------------------------------------------------
+} // end setupWikiBot
+
+// ============================================================
+// HOME PAGE MANAGEMENT (PHOTO, ABOUT, COLLABORATORS)
+// Called once after auth, closes over supabase + role
+// ============================================================
+function setupHomeManagement(supabase, currentUserRole) {
 
   // 1. Team Photo Logic
   async function loadTeamPhoto() {
@@ -1612,4 +1614,4 @@ function setupWikiBot(supabase) {
       }
     });
   }
-}
+} // end setupHomeManagement
