@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   
-  const apiKey = process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Clé API manquante.' });
 
   try {
@@ -40,21 +40,47 @@ Cependant, tu as le droit de répondre de manière naturelle aux formules de pol
 Contexte (Base de connaissances interne) :
 ${contextText}`;
 
-    // Fallback to gemini-pro (Gemini 1.0 Pro is universally supported)
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ parts: [{ text: message }] }],
-        generationConfig: { temperature: 0.1 }
-      })
-    });
+    const isOpenAI = apiKey.startsWith('sk-');
+    let replyText = '';
 
-    const data = await response.json();
-    if (!response.ok) return res.status(500).json({ error: data.error?.message || "Erreur Gemini API" });
+    if (isOpenAI) {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: message }
+          ],
+          temperature: 0.1
+        })
+      });
 
-    return res.status(200).json({ reply: data.candidates[0].content.parts[0].text });
+      const data = await response.json();
+      if (!response.ok) return res.status(500).json({ error: data.error?.message || "Erreur OpenAI API" });
+      replyText = data.choices[0].message.content;
+    } else {
+      // Fallback Gemini logic
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ parts: [{ text: message }] }],
+          generationConfig: { temperature: 0.1 }
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) return res.status(500).json({ error: data.error?.message || "Erreur Gemini API" });
+      replyText = data.candidates[0].content.parts[0].text;
+    }
+
+    return res.status(200).json({ reply: replyText });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
