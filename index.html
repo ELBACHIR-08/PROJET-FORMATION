@@ -18,8 +18,21 @@
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <!-- OGL WebGL Library -->
-  <script src="https://unpkg.com/ogl"></script>
+  <!-- OGL WebGL Library (UMD build — exposes window.ogl globally) -->
+  <script>
+    // Dynamically load OGL UMD build to ensure it's available as window.ogl
+    (function() {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/ogl@1.0.7/dist/ogl.umd.js';
+      s.onload = function() {
+        // Some builds expose as OGL, normalize to window.ogl
+        if (!window.ogl && window.OGL) window.ogl = window.OGL;
+        console.log('[OGL] Loaded. window.ogl:', !!window.ogl, 'window.OGL:', !!window.OGL);
+      };
+      s.onerror = function() { console.error('[OGL] Failed to load from jsDelivr.'); };
+      document.head.appendChild(s);
+    })();
+  </script>
   
   <!-- GSAP CDN for ChromaGrid/Animations -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>

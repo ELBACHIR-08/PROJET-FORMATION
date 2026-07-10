@@ -381,11 +381,13 @@ class CircularGalleryApp {
       scrollEase = 0.05
     } = {}
   ) {
-    if (!window.ogl) {
-      console.error("OGL library not found.");
+    // Support both window.ogl and window.OGL (different CDN build formats)
+    const oglLib = window.ogl || window.OGL;
+    if (!oglLib) {
+      console.error("OGL library not found on window.ogl or window.OGL. Check the CDN script tag.");
       return;
     }
-    this.ogl = window.ogl;
+    this.ogl = oglLib;
     this.container = container;
     this.scrollSpeed = scrollSpeed;
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
@@ -562,7 +564,23 @@ class CircularGalleryApp {
 }
 
 window.CircularGallery = {
+  // Polls until window.ogl or window.OGL is available, then initializes
   init: async function(container, options) {
+    // Wait for OGL (max 8 seconds, poll every 100ms)
+    const ogl = await new Promise((resolve, reject) => {
+      let attempts = 0;
+      const check = () => {
+        const lib = window.ogl || window.OGL;
+        if (lib) return resolve(lib);
+        if (++attempts > 80) return reject(new Error('OGL library did not load in time.'));
+        setTimeout(check, 100);
+      };
+      check();
+    });
+
+    // Normalize to window.ogl so the constructor finds it
+    if (!window.ogl) window.ogl = ogl;
+
     container.classList.add('circular-gallery');
     container.tabIndex = 0;
     const fontToUse = await resolveFont(options.font || DEFAULT_FONT, options.fontUrl);
