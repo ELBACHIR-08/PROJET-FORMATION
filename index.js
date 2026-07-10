@@ -798,7 +798,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const listBody = document.getElementById('admin-users-list');
     if (!listBody) return;
     try {
-      const response = await fetch('/api/users');
+      const response = await fetch('/api/users.js');
       if (!response.ok) throw new Error("Erreur de récupération");
       const users = await response.json();
       
@@ -863,7 +863,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const role = document.getElementById('new-user-role').value;
       
       try {
-        const response = await fetch('/api/users', {
+        const response = await fetch('/api/users.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password, name, role })
