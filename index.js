@@ -1560,10 +1560,12 @@ function setupHomeManagement(supabase, currentUserRole) {
           `;
         }
 
+        const imgSrc = member.image_url || `https://i.pravatar.cc/300?u=${member.id}`;
+
         card.innerHTML = `
           ${deleteBtnHTML}
           <div class="chroma-img-wrapper">
-            <img src="https://i.pravatar.cc/300?u=${member.id}" alt="${member.name}" loading="lazy" />
+            <img src="${imgSrc}" alt="${member.name}" loading="lazy" />
           </div>
           <footer class="chroma-info">
             <h3 class="name">${member.name}</h3>
@@ -1676,14 +1678,36 @@ function setupHomeManagement(supabase, currentUserRole) {
       const name = document.getElementById('collaborator-name').value.trim();
       const role = document.getElementById('collaborator-role').value.trim();
       const motto = document.getElementById('collaborator-motto').value.trim();
+      const photoInput = document.getElementById('collaborator-photo');
 
       const btnSave = document.getElementById('btn-save-collaborator');
       btnSave.disabled = true;
       btnSave.textContent = "Enregistrement...";
 
       try {
+        let image_url = null;
+        if (photoInput && photoInput.files.length > 0) {
+          const file = photoInput.files[0];
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+          
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(fileName, file);
+
+          if (uploadError) throw uploadError;
+
+          const { data: publicUrlData } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(fileName);
+            
+          if (publicUrlData && publicUrlData.publicUrl) {
+            image_url = publicUrlData.publicUrl;
+          }
+        }
+
         const { error } = await supabase.from('team_members').insert([
-          { name, role, motto }
+          { name, role, motto, image_url }
         ]);
 
         if (error) throw error;

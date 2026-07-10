@@ -487,6 +487,12 @@
 
       <form id="collaborator-create-form">
         <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="collaborator-photo" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Photo (Optionnel)</label>
+          <input type="file" id="collaborator-photo" accept="image/*" capture="user" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit;">
+          <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.25rem;">Prenez une photo avec votre webcam ou téléchargez un fichier.</p>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
           <label for="collaborator-name" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--foreground);">Nom complet</label>
           <input type="text" id="collaborator-name" required placeholder="Ex: Jean Dupont" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background-color: var(--background); color: var(--foreground); font-family: inherit;">
         </div>
