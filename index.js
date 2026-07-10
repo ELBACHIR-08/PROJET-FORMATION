@@ -817,15 +817,46 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td style="padding: 1rem;">
               <span style="background-color: ${roleColor}; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${role}</span>
             </td>
-            <td style="padding: 1rem;">
+            <td style="padding: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
               <button class="btn btn-outline" style="font-size: 0.75rem; padding: 0.3rem 0.5rem;">Modifier</button>
+              <button class="btn btn-outline btn-delete-user" data-userid="${u.id}" style="font-size: 0.75rem; padding: 0.3rem 0.5rem; color: var(--destructive); border-color: var(--destructive);">Supprimer</button>
             </td>
           </tr>
         `;
       });
     } catch (e) {
+    } catch (e) {
       listBody.innerHTML = `<tr><td colspan="3" style="padding: 2rem; text-align: center; color: var(--destructive);">Impossible de charger les utilisateurs. Vérifiez l'API.</td></tr>`;
     }
+  }
+
+  // Handle delete user
+  const adminUsersList = document.getElementById('admin-users-list');
+  if (adminUsersList) {
+    adminUsersList.addEventListener('click', async (e) => {
+      const btnDelete = e.target.closest('.btn-delete-user');
+      if (btnDelete) {
+        const userId = btnDelete.getAttribute('data-userid');
+        if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur définitivement ?")) {
+          btnDelete.textContent = "...";
+          btnDelete.disabled = true;
+          try {
+            const response = await fetch('/api/users.js', {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "Erreur de suppression");
+            loadAdminUsers();
+          } catch (err) {
+            alert(err.message);
+            btnDelete.textContent = "Supprimer";
+            btnDelete.disabled = false;
+          }
+        }
+      }
+    });
   }
 
   // Create User Modal Logic
@@ -858,7 +889,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       btnSubmitCreateUser.textContent = 'Création...';
       
       const name = document.getElementById('new-user-name').value;
-      const email = document.getElementById('new-user-email').value;
+      const login = document.getElementById('new-user-login').value;
       const password = document.getElementById('new-user-password').value;
       const role = document.getElementById('new-user-role').value;
       
@@ -866,7 +897,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const response = await fetch('/api/users.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, name, role })
+          body: JSON.stringify({ login, password, name, role })
         });
         
         const data = await response.json();

@@ -63,8 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
     btnLogin.disabled = true;
     btnLogin.textContent = 'Connexion...';
 
-    const email = document.getElementById('email').value;
+    let email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
+
+    if (!email.includes('@')) {
+      email = `${email}@digitalvirgo.local`;
+    }
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -95,8 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
     
     const jobTitle = document.getElementById('reg-job').value;
-    const email = document.getElementById('reg-email').value;
+    let email = document.getElementById('reg-email').value.trim();
     const password = document.getElementById('reg-password').value;
+
+    if (!email.includes('@')) {
+      email = `${email}@digitalvirgo.local`;
+    }
 
     try {
       let avatarUrl = null;

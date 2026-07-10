@@ -39,9 +39,15 @@ module.exports = async function handler(req, res) {
 
   // POST: Create user
   if (req.method === 'POST') {
-    const { email, password, name, role } = req.body;
-    if (!email || !password || !role) {
-      return res.status(400).json({ error: 'Email, password, and role are required.' });
+    const { login, password, name, role } = req.body;
+    if (!login || !password || !role) {
+      return res.status(400).json({ error: 'Login, password, and role are required.' });
+    }
+
+    // Format email properly
+    let finalEmail = login;
+    if (!login.includes('@')) {
+      finalEmail = `${login}@digitalvirgo.local`;
     }
 
     try {
@@ -50,7 +56,7 @@ module.exports = async function handler(req, res) {
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
 
       const { data, error } = await supabase.auth.admin.createUser({
-        email: email,
+        email: finalEmail,
         password: password,
         email_confirm: true,
         user_metadata: {
@@ -68,7 +74,24 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // DELETE: Delete user
+  if (req.method === 'DELETE') {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ error: 'UserId is required for deletion.' });
+    }
+
+    try {
+      const { data, error } = await supabase.auth.admin.deleteUser(userId);
+      if (error) throw error;
+      return res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return res.status(500).json({ error: 'Failed to delete user: ' + error.message });
+    }
+  }
+
   // Method not allowed
-  res.setHeader('Allow', ['GET', 'POST']);
+  res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
   return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
 };
