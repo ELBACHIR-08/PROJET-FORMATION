@@ -1819,6 +1819,34 @@ function setupHomeManagement(supabase, currentUserRole) {
   loadAboutSection();
   loadCollaborators();
   initRotatingText();
+  initMobileMenu();
+
+  function initMobileMenu() {
+    const btnMenu = document.getElementById('btn-mobile-menu');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    if (!btnMenu || !sidebar || !overlay) return;
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
+
+    btnMenu.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+
+    // Also close sidebar if a link is clicked on mobile
+    const sidebarLinks = document.querySelectorAll('.line-sidebar-item');
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('active');
+        }
+      });
+    });
+  }
 
   function initRotatingText() {
     const container = document.getElementById('rotating-text');
