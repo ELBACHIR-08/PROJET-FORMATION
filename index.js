@@ -80,7 +80,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 4. Modals Setup
     setupProfileModal(supabase, session.user);
     setupWikiModals(supabase, session.user);
-    setupWikiBot(supabase);
     setupHomeManagement(supabase, currentUserRole);
 
     // Déconnexion
@@ -830,33 +829,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Handle delete user
-  const adminUsersList = document.getElementById('admin-users-list');
-  if (adminUsersList) {
-    adminUsersList.addEventListener('click', async (e) => {
-      const btnDelete = e.target.closest('.btn-delete-user');
-      if (btnDelete) {
-        const userId = btnDelete.getAttribute('data-userid');
-        if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur définitivement ?")) {
-          btnDelete.textContent = "...";
-          btnDelete.disabled = true;
-          try {
-            const response = await fetch('/api/users.js', {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userId })
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || "Erreur de suppression");
+  document.body.addEventListener('click', async (e) => {
+    const btnDelete = e.target.closest('.btn-delete-user');
+    if (btnDelete) {
+      const userId = btnDelete.getAttribute('data-userid');
+      if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur définitivement ?")) {
+        btnDelete.textContent = "...";
+        btnDelete.disabled = true;
+        try {
+          const response = await fetch('/api/users.js', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId })
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "Erreur de suppression");
+          
+          if (typeof loadAdminUsers === 'function') {
             loadAdminUsers();
-          } catch (err) {
-            alert(err.message);
-            btnDelete.textContent = "Supprimer";
-            btnDelete.disabled = false;
+          } else {
+            window.location.reload();
           }
+        } catch (err) {
+          alert("Erreur lors de la suppression : " + err.message);
+          btnDelete.textContent = "Supprimer";
+          btnDelete.disabled = false;
         }
       }
-    });
-  }
+    }
+  });
 
   // Create User Modal Logic
   const modalCreateUser = document.getElementById('modal-create-user');
@@ -1193,113 +1194,6 @@ function openWikiReader(wiki) {
   };
 }
 
-function setupWikiBot(supabase) {
-  const chatForm = document.getElementById('bot-chat-form');
-  const chatInput = document.getElementById('bot-chat-input');
-  const messagesContainer = document.getElementById('bot-messages');
-
-  if (!chatForm || !chatInput || !messagesContainer) return;
-
-  const btnSubmit = chatForm.querySelector('button[type="submit"]');
-
-  const sendMessage = async () => {
-    const message = chatInput.value.trim();
-    if (!message) return;
-
-    // 1. Add User Message
-    appendMessage('user', message);
-    chatInput.value = '';
-
-    // 2. Add Bot "Typing..." Message
-    const typingId = appendMessage('bot', '...', true);
-
-    // 3. Search Knowledge Base
-    try {
-      const { data: wikis, error } = await supabase
-        .from('wiki_articles')
-        .select('*')
-        .eq('vertical', window.currentVertical || 'LIVE');
-
-      if (error) throw error;
-
-      const cleanMsg = message.toLowerCase().trim();
-      if (['bonjour', 'bonsoir', 'salut', 'coucou', 'hello'].includes(cleanMsg)) {
-        const typingEl = document.getElementById(typingId);
-        if (typingEl) typingEl.remove();
-        let timeGreet = cleanMsg === 'bonsoir' ? 'Bonsoir' : 'Bonjour';
-        appendMessage('bot', `${timeGreet} ! Que puis-je faire pour vous ? N'hésitez pas à me demander une définition (ex: ROI, CPA, Tracking) ou une procédure de la base de connaissances.`);
-        return;
-      }
-
-      // 3. Call OpenAI Vercel API
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            message: message, 
-            vertical: window.currentVertical || 'LIVE' 
-          })
-        });
-
-        const data = await response.json();
-        
-        const typingEl = document.getElementById(typingId);
-        if (typingEl) typingEl.remove();
-
-        if (response.ok && data.reply) {
-          let formattedReply = data.reply
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\n/g, '<br>');
-          appendMessage('bot', formattedReply);
-        } else {
-          appendMessage('bot', "Erreur : " + (data.error || "Réponse invalide de l'API"));
-        }
-      } catch (err) {
-        const typingEl = document.getElementById(typingId);
-        if (typingEl) typingEl.remove();
-        console.error(err);
-        appendMessage('bot', "Erreur de connexion au serveur d'IA.");
-      }
-    } catch (err) {
-      const typingEl = document.getElementById(typingId);
-      if (typingEl) typingEl.remove();
-      console.error(err);
-      appendMessage('bot', "Erreur technique : " + (err.message || JSON.stringify(err)));
-    }
-  };
-
-  if (btnSubmit) {
-    btnSubmit.addEventListener('click', (e) => {
-      e.preventDefault();
-      sendMessage();
-    });
-  }
-
-  chatInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-
-  function appendMessage(role, text, isTyping = false) {
-    const id = 'msg-' + Date.now();
-    const div = document.createElement('div');
-    div.id = id;
-    div.style.display = 'flex';
-    div.style.gap = '1rem';
-    div.style.alignItems = 'flex-start';
-    div.style.maxWidth = '85%';
-    div.style.animation = 'fadeIn 0.3s ease-out';
-    
-    if (role === 'user') {
-      div.style.alignSelf = 'flex-end';
-      div.style.flexDirection = 'row-reverse';
-      
-      div.innerHTML = `
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--secondary); display: flex; align-items: center; justify-content: center; color: var(--foreground); flex-shrink: 0; border: 1px solid var(--border);">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </div>
         <div style="background: var(--primary); padding: 1rem 1.25rem; border-radius: 12px; border-top-right-radius: 2px; color: white; font-size: 0.95rem; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
           ${text}
