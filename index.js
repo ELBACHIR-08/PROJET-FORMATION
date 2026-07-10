@@ -1313,48 +1313,77 @@ function setupHomeManagement(supabase, currentUserRole) {
 
     if (!supabase || !container) return;
 
-    // Check if role is admin to show upload/delete buttons
     const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
     if (isAdmin && uploadContainer) {
       uploadContainer.style.display = 'flex';
     }
 
-    let defaultImages = [
-      { image: "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=500&auto=format", text: "Digital Virgo" },
-      { image: "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=500&auto=format", text: "Dakar Office" },
-      { image: "https://images.unsplash.com/photo-1452626212852-811d58933cae?q=80&w=500&auto=format", text: "Innovation" },
-      { image: "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?q=80&w=500&auto=format", text: "Collaboration" }
+    // Default gallery items with team photos
+    let galleryItems = [
+      { image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format", text: "Digital Virgo Sénégal" },
+      { image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800&auto=format", text: "Notre Équipe" },
+      { image: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format", text: "Dakar Office" },
+      { image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=800&auto=format", text: "Collaboration" }
     ];
 
+    // Fetch all uploaded team photos from Supabase Storage
     try {
-      const { data } = supabase.storage.from('avatars').getPublicUrl('team_photo.png');
-      if (data && data.publicUrl) {
-        const res = await fetch(data.publicUrl, { method: 'HEAD' });
-        if (res.ok) {
-          // If custom photo exists, add it as the first element in array
-          defaultImages.unshift({ image: data.publicUrl + '?t=' + Date.now(), text: "Notre Photo" });
+      const { data: fileList, error: listErr } = await supabase.storage
+        .from('avatars')
+        .list('team_photos', { limit: 20, offset: 0, sortBy: { column: 'created_at', order: 'asc' } });
+
+      if (!listErr && fileList && fileList.length > 0) {
+        const uploadedItems = fileList
+          .filter(f => f.name && !f.name.startsWith('.'))
+          .map(f => {
+            const { data } = supabase.storage.from('avatars').getPublicUrl('team_photos/' + f.name);
+            return {
+              image: data.publicUrl + '?t=' + new Date(f.updated_at || f.created_at).getTime(),
+              text: f.name.replace(/\.\w+$/, '').replace(/_/g, ' ')
+            };
+          });
+        if (uploadedItems.length > 0) {
+          galleryItems = [...uploadedItems, ...galleryItems];
           if (btnDeletePhoto && isAdmin) btnDeletePhoto.style.display = 'flex';
-        } else {
-          if (btnDeletePhoto) btnDeletePhoto.style.display = 'none';
+        }
+      } else {
+        // Fallback: try legacy single photo
+        const { data: legacyData } = supabase.storage.from('avatars').getPublicUrl('team_photo.png');
+        if (legacyData && legacyData.publicUrl) {
+          const res = await fetch(legacyData.publicUrl, { method: 'HEAD' });
+          if (res.ok) {
+            galleryItems.unshift({ image: legacyData.publicUrl + '?t=' + Date.now(), text: "Notre Photo" });
+            if (btnDeletePhoto && isAdmin) btnDeletePhoto.style.display = 'flex';
+          }
         }
       }
     } catch (err) {
-      console.warn("Could not load team photo", err);
+      console.warn("Could not load team photos", err);
     }
 
+    // Destroy previous instance if any
+    if (window.teamGalleryInstance) {
+      try { window.teamGalleryInstance.destroy(); } catch(e) {}
+      window.teamGalleryInstance = null;
+    }
+
+    // Clear the container (remove old canvas if any)
     container.innerHTML = '';
-    if (window.circularGalleryInstance) {
-      window.circularGalleryInstance.destroy();
-    }
 
+    // Initialize CircularGallery — wait for container to be in DOM with dimensions
     if (window.CircularGallery) {
-      window.circularGalleryInstance = await window.CircularGallery.init(container, {
-        items: defaultImages,
+      window.teamGalleryInstance = await window.CircularGallery.init(container, {
+        items: galleryItems,
         bend: 3,
         textColor: '#ffffff',
         borderRadius: 0.05,
-        font: 'bold 24px Inter'
+        scrollSpeed: 2,
+        scrollEase: 0.05,
+        font: 'bold 22px Inter'
       });
+    } else {
+      // Fallback: show placeholder message if OGL not loaded
+      container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.5);font-size:1rem;">Galerie en cours de chargement…</div>';
     }
   }
 
@@ -1366,43 +1395,54 @@ function setupHomeManagement(supabase, currentUserRole) {
       if (!file) return;
 
       const label = document.querySelector('label[for="team-photo-input"]');
-      const originalText = label.innerHTML;
-      label.innerHTML = "Téléchargement...";
+      const originalHTML = label.innerHTML;
+      label.textContent = "Envoi en cours…";
       label.style.pointerEvents = 'none';
 
       try {
+        const ext = file.name.split('.').pop();
+        const fileName = `team_photos/${Date.now()}.${ext}`;
+
         const { error } = await supabase.storage
           .from('avatars')
-          .upload('team_photo.png', file, {
-            upsert: true,
-            contentType: file.type
-          });
+          .upload(fileName, file, { upsert: false, contentType: file.type });
 
         if (error) throw error;
 
+        // Reset file input so same file can be re-uploaded if needed
+        teamPhotoInput.value = '';
         await loadTeamPhoto();
-        alert("Photo d'équipe mise à jour avec succès !");
+        alert("Photo ajoutée à la galerie !");
       } catch (err) {
         alert("Erreur lors du téléchargement : " + err.message);
       } finally {
-        label.innerHTML = originalText;
+        label.innerHTML = originalHTML;
         label.style.pointerEvents = 'auto';
       }
     });
   }
 
-  // Setup photo delete listener
+  // Setup photo delete listener — removes ALL photos from team_photos folder
   const btnDeletePhoto = document.getElementById('btn-delete-team-photo');
   if (btnDeletePhoto) {
     btnDeletePhoto.addEventListener('click', async () => {
-      if (!confirm("Voulez-vous vraiment supprimer la photo d'équipe ?")) return;
+      if (!confirm("Supprimer TOUTES les photos de la galerie ? (Les photos par défaut resteront.)")) return;
 
       try {
-        const { error } = await supabase.storage.from('avatars').remove(['team_photo.png']);
-        if (error) throw error;
+        const { data: fileList, error: listErr } = await supabase.storage
+          .from('avatars')
+          .list('team_photos');
+
+        if (listErr) throw listErr;
+
+        if (fileList && fileList.length > 0) {
+          const paths = fileList.map(f => 'team_photos/' + f.name);
+          const { error: delErr } = await supabase.storage.from('avatars').remove(paths);
+          if (delErr) throw delErr;
+        }
 
         await loadTeamPhoto();
-        alert("Photo d'équipe supprimée !");
+        alert("Photos supprimées !");
       } catch (err) {
         alert("Erreur lors de la suppression : " + err.message);
       }
