@@ -1828,6 +1828,11 @@ function setupWikiBot(supabase) {
 
   if (!chatForm || !chatInput || !messagesContainer) return;
 
+  // Add initial welcome message if empty
+  if (messagesContainer.children.length === 0) {
+    appendMessage('bot', "Bonjour ! 👋 Je suis l'Assistant IA de Digital Virgo. Posez-moi vos questions sur nos bases de connaissances, et je vous répondrai !");
+  }
+
   const btnSubmit = chatForm.querySelector('button[type="submit"]');
 
   const sendMessage = async () => {
