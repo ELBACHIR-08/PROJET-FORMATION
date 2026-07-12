@@ -1616,8 +1616,8 @@ function setupHomeManagement(supabase, currentUserRole) {
       <div class="chroma-fade"></div>
     `;
 
-    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
-    if (isAdmin && btnAddCollab) {
+    const isSuperAdmin = (currentUserRole === 'SUPER_ADMIN');
+    if (isSuperAdmin && btnAddCollab) {
       btnAddCollab.style.display = 'flex';
     }
 
@@ -1644,7 +1644,7 @@ function setupHomeManagement(supabase, currentUserRole) {
 
         // Admin actions inside card
         let deleteBtnHTML = '';
-        if (isAdmin) {
+        if (isSuperAdmin) {
           deleteBtnHTML = `
             <button class="btn-delete-member" data-id="${member.id}" style="position: absolute; top: 0.75rem; right: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--destructive); cursor: pointer; padding: 0.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;" onmouseover="this.style.background='var(--destructive)'; this.style.color='var(--destructive-foreground)'" onmouseout="this.style.background='transparent'; this.style.color='var(--destructive)'">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -1675,7 +1675,7 @@ function setupHomeManagement(supabase, currentUserRole) {
         });
 
         // Delete member click handler
-        if (isAdmin) {
+        if (isSuperAdmin) {
           const deleteBtn = card.querySelector('.btn-delete-member');
           deleteBtn.addEventListener('click', async (e) => {
             e.stopPropagation();
