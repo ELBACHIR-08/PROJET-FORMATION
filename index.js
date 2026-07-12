@@ -141,6 +141,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (cleanPath === '/' || cleanPath === '/home') {
       if (welcomeView) welcomeView.style.display = 'block';
+      if (window.teamGalleryInstance && typeof window.teamGalleryInstance.onResize === 'function') {
+        setTimeout(() => window.teamGalleryInstance.onResize(), 10);
+      }
       window.scrollTo(0, 0);
       return;
     }
