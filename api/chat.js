@@ -10,8 +10,8 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   
-  const apiKey = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'Clé API manquante.' });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: 'Clé API Gemini (GEMINI_API_KEY) manquante dans la configuration Vercel.' });
 
   try {
     const { message, vertical = 'LIVE' } = req.body;
@@ -40,57 +40,27 @@ Cependant, tu as le droit de répondre de manière naturelle aux formules de pol
 Contexte (Base de connaissances interne) :
 ${contextText}`;
 
-    const isOpenAI = apiKey.startsWith('sk-');
-    let replyText = '';
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents: [{ parts: [{ text: message }] }],
+        generationConfig: { temperature: 0.1 }
+      })
+    });
 
-    if (isOpenAI) {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: message }
-          ],
-          temperature: 0.1
-        })
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        if (data.error?.code === 'insufficient_quota' || data.error?.message?.toLowerCase().includes('quota')) {
-          return res.status(403).json({ error: "Votre clé OpenAI n'a plus de crédits ou a expiré. Veuillez générer une clé gratuite Google Gemini via https://aistudio.google.com/app/apikey" });
-        }
-        return res.status(500).json({ error: data.error?.message || "Erreur OpenAI API" });
+    const data = await response.json();
+    if (!response.ok) {
+      if (data.error?.message?.toLowerCase().includes('quota')) {
+        return res.status(403).json({ error: "Votre clé Google Gemini a atteint sa limite de quota gratuit ou le service est saturé. Veuillez réessayer dans un instant." });
       }
-      replyText = data.choices[0].message.content;
-    } else {
-      // Fallback Gemini logic
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemPrompt }] },
-          contents: [{ parts: [{ text: message }] }],
-          generationConfig: { temperature: 0.1 }
-        })
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        if (data.error?.message?.toLowerCase().includes('quota')) {
-          return res.status(403).json({ error: "Votre clé Google Gemini a atteint sa limite de quota gratuit. Veuillez générer une nouvelle clé sur un autre compte Google via https://aistudio.google.com/app/apikey" });
-        }
-        return res.status(500).json({ error: data.error?.message || "Erreur Gemini API" });
-      }
-      replyText = data.candidates[0].content.parts[0].text;
+      return res.status(500).json({ error: data.error?.message || "Erreur Gemini API" });
     }
-
+    
+    const replyText = data.candidates[0].content.parts[0].text;
     return res.status(200).json({ reply: replyText });
+
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
