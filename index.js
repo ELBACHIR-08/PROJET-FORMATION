@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentUserRole = 'ADMIN';
     }
 
-    // Hide Admin sidebar button if neither ADMIN nor SUPER_ADMIN
+    // Hide Admin sidebar button if not SUPER_ADMIN
     const btnGotoAdmin = document.getElementById('btn-goto-admin');
-    if (btnGotoAdmin && currentUserRole !== 'ADMIN' && currentUserRole !== 'SUPER_ADMIN') {
+    if (btnGotoAdmin && currentUserRole !== 'SUPER_ADMIN') {
       btnGotoAdmin.style.display = 'none';
     } else if (btnGotoAdmin) {
       btnGotoAdmin.style.display = 'flex';
@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (cleanPath === '/admin') {
-      if (currentUserRole !== 'ADMIN' && currentUserRole !== 'SUPER_ADMIN') {
-        alert("Accès refusé. Vous n'avez pas les droits d'administration.");
+      if (currentUserRole !== 'SUPER_ADMIN') {
+        alert("Accès refusé. Seul le Super Administrateur peut accéder à la gestion des utilisateurs.");
         navigateTo('/');
         return;
       }
