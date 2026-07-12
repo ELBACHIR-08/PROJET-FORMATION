@@ -1305,8 +1305,8 @@ function setupHomeManagement(supabase, currentUserRole) {
 
     if (!supabase || !container) return;
 
-    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
-    if (isAdmin && uploadContainer) {
+    const isSuperAdmin = (currentUserRole === 'SUPER_ADMIN');
+    if (isSuperAdmin && uploadContainer) {
       uploadContainer.style.display = 'flex';
     }
 
@@ -1347,7 +1347,7 @@ function setupHomeManagement(supabase, currentUserRole) {
       console.warn("Could not load team gallery from DB", err);
     }
     
-    if (btnDeletePhoto && isAdmin && galleryItems.length > 0) {
+    if (btnDeletePhoto && isSuperAdmin && galleryItems.length > 0) {
       btnDeletePhoto.style.display = 'flex';
     } else if (btnDeletePhoto) {
       btnDeletePhoto.style.display = 'none';
