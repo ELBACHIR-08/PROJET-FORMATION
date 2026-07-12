@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (aboutView) aboutView.style.display = 'none';
     
     // Clear sidebar active states
-    document.querySelectorAll('#sidebar-verticals .line-sidebar-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.line-sidebar-item').forEach(n => n.classList.remove('active'));
 
     const cleanPath = path.replace(/\/$/, '').toLowerCase() || '/';
 
@@ -161,6 +161,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (cleanPath === '/about') {
       if (aboutView) aboutView.style.display = 'block';
+      const aboutBtn = document.getElementById('btn-nav-about');
+      if (aboutBtn) aboutBtn.classList.add('active');
       window.scrollTo(0, 0);
       return;
     }
