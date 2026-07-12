@@ -378,13 +378,48 @@
         <div style="margin-bottom: 2rem;">
           <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Rôle d'accès</label>
           <select id="new-user-role" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem; background: var(--background);">
-            <option value="LECTEUR">LECTEUR (Consultation uniquement)</option>
-            <option value="ADMIN">ADMIN (Gestion des parcours et Wiki)</option>
-            <option value="SUPER_ADMIN">SUPER_ADMIN (Accès total)</option>
+            <option value="READER">LECTEUR (Consultation uniquement)</option>
+            <option value="ADMIN">ADMIN (Gestion totale)</option>
           </select>
         </div>
         <button type="submit" class="btn btn-primary" id="btn-submit-create-user" style="width: 100%; padding: 0.85rem;">Créer le compte</button>
         <p id="create-user-error" style="color: var(--destructive); font-size: 0.85rem; margin-top: 1rem; display: none; text-align: center;"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale : Modification d'utilisateur -->
+  <div class="modal-overlay" id="modal-edit-user" style="display: none; align-items: center; justify-content: center; z-index: 1000;">
+    <div class="modal-content" style="width: 100%; max-width: 500px; padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 700;">Modifier Utilisateur</h2>
+        <button class="modal-close" id="btn-close-edit-user" style="background: none; border: none; cursor: pointer; color: var(--muted-foreground);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <form id="form-edit-user">
+        <input type="hidden" id="edit-user-id">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Prénom et Nom</label>
+          <input type="text" id="edit-user-name" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Identifiant (Login / Email)</label>
+          <input type="text" id="edit-user-login" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Nouveau mot de passe (Optionnel)</label>
+          <input type="password" id="edit-user-password" minlength="6" placeholder="Laissez vide pour conserver l'actuel" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem;">
+        </div>
+        <div style="margin-bottom: 2rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Rôle d'accès</label>
+          <select id="edit-user-role" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem; background: var(--background);">
+            <option value="READER">LECTEUR (Consultation uniquement)</option>
+            <option value="ADMIN">ADMIN (Gestion totale)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" id="btn-submit-edit-user" style="width: 100%; padding: 0.85rem;">Mettre à jour le compte</button>
+        <p id="edit-user-error" style="color: var(--destructive); font-size: 0.85rem; margin-top: 1rem; display: none; text-align: center;"></p>
       </form>
     </div>
   </div>

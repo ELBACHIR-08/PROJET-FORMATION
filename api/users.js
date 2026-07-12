@@ -91,7 +91,53 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // PUT: Update user
+  if (req.method === 'PUT') {
+    const { userId, login, password, name, role } = req.body;
+    if (!userId) {
+      return res.status(400).json({ error: 'UserId is required for update.' });
+    }
+
+    try {
+      const updateData = {};
+      
+      if (password) {
+        updateData.password = password;
+      }
+      
+      if (name !== undefined || role !== undefined || login) {
+        updateData.user_metadata = {};
+        
+        if (name) {
+          const nameParts = name.split(' ');
+          updateData.user_metadata.first_name = nameParts[0];
+          updateData.user_metadata.last_name = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+        }
+        
+        if (role) {
+          updateData.user_metadata.role = role;
+        }
+      }
+      
+      if (login) {
+        let finalEmail = login;
+        if (!login.includes('@')) {
+          finalEmail = `${login}@digitalvirgo.local`;
+        }
+        updateData.email = finalEmail;
+      }
+
+      const { data, error } = await supabase.auth.admin.updateUserById(userId, updateData);
+      
+      if (error) throw error;
+      return res.status(200).json({ message: 'User updated successfully', user: data.user });
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return res.status(500).json({ error: 'Failed to update user: ' + error.message });
+    }
+  }
+
   // Method not allowed
-  res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
+  res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
   return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
 };

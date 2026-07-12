@@ -822,7 +822,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <span style="background-color: ${roleColor}; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${role}</span>
             </td>
             <td style="padding: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
-              <button class="btn btn-outline" style="font-size: 0.75rem; padding: 0.3rem 0.5rem;">Modifier</button>
+              <button class="btn btn-outline btn-edit-user" data-userid="${u.id}" data-name="${meta.first_name || ''} ${meta.last_name || ''}" data-email="${u.email}" data-role="${role}" style="font-size: 0.75rem; padding: 0.3rem 0.5rem;">Modifier</button>
               <button class="btn btn-outline btn-delete-user" data-userid="${u.id}" style="font-size: 0.75rem; padding: 0.3rem 0.5rem; color: var(--destructive); border-color: var(--destructive);">Supprimer</button>
             </td>
           </tr>
@@ -863,6 +863,83 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
   });
+
+  // Handle edit user
+  const modalEditUser = document.getElementById('modal-edit-user');
+  const btnCloseEditUser = document.getElementById('btn-close-edit-user');
+  const formEditUser = document.getElementById('form-edit-user');
+  const editUserError = document.getElementById('edit-user-error');
+  const btnSubmitEditUser = document.getElementById('btn-submit-edit-user');
+
+  document.body.addEventListener('click', (e) => {
+    const btnEdit = e.target.closest('.btn-edit-user');
+    if (btnEdit && modalEditUser) {
+      const userId = btnEdit.getAttribute('data-userid');
+      const name = btnEdit.getAttribute('data-name');
+      const email = btnEdit.getAttribute('data-email');
+      const role = btnEdit.getAttribute('data-role');
+
+      document.getElementById('edit-user-id').value = userId;
+      document.getElementById('edit-user-name').value = name.trim();
+      document.getElementById('edit-user-login').value = email;
+      document.getElementById('edit-user-role').value = role;
+      document.getElementById('edit-user-password').value = '';
+
+      editUserError.style.display = 'none';
+      modalEditUser.style.display = 'flex';
+    }
+  });
+
+  if (btnCloseEditUser) {
+    btnCloseEditUser.addEventListener('click', (e) => {
+      e.preventDefault();
+      modalEditUser.style.display = 'none';
+    });
+  }
+
+  if (formEditUser) {
+    formEditUser.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      editUserError.style.display = 'none';
+      btnSubmitEditUser.disabled = true;
+      btnSubmitEditUser.textContent = 'Mise à jour...';
+      
+      const userId = document.getElementById('edit-user-id').value;
+      const name = document.getElementById('edit-user-name').value;
+      const login = document.getElementById('edit-user-login').value;
+      const password = document.getElementById('edit-user-password').value;
+      const role = document.getElementById('edit-user-role').value;
+      
+      try {
+        const payload = { userId, login, name, role };
+        if (password.trim() !== '') {
+          payload.password = password;
+        }
+
+        const response = await fetch('/api/users.js', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Erreur inconnue");
+        
+        modalEditUser.style.display = 'none';
+        if (typeof loadAdminUsers === 'function') {
+          loadAdminUsers();
+        } else {
+          window.location.reload();
+        }
+      } catch (err) {
+        editUserError.textContent = "Erreur : " + err.message;
+        editUserError.style.display = 'block';
+      } finally {
+        btnSubmitEditUser.disabled = false;
+        btnSubmitEditUser.textContent = 'Mettre à jour le compte';
+      }
+    });
+  }
 
   // Create User Modal Logic
   const modalCreateUser = document.getElementById('modal-create-user');
