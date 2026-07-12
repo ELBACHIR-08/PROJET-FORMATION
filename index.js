@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentUserRole = 'ADMIN';
     }
 
-    // Hide Admin sidebar button if READER
+    // Hide Admin sidebar button if neither ADMIN nor SUPER_ADMIN
     const btnGotoAdmin = document.getElementById('btn-goto-admin');
-    if (btnGotoAdmin && currentUserRole !== 'ADMIN') {
+    if (btnGotoAdmin && currentUserRole !== 'ADMIN' && currentUserRole !== 'SUPER_ADMIN') {
       btnGotoAdmin.style.display = 'none';
     } else if (btnGotoAdmin) {
       btnGotoAdmin.style.display = 'flex';
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (cleanPath === '/admin') {
-      if (currentUserRole === 'READER') {
+      if (currentUserRole !== 'ADMIN' && currentUserRole !== 'SUPER_ADMIN') {
         alert("Accès refusé. Vous n'avez pas les droits d'administration.");
         navigateTo('/');
         return;
@@ -456,8 +456,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       
       
-      // Afficher le bouton Créer si Admin
-      if (currentUserRole === 'ADMIN') {
+      // Afficher le bouton Créer si Admin ou Super Admin
+      if (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN') {
         wikiActions.style.display = 'flex';
       } else {
         wikiActions.style.display = 'none';
@@ -810,7 +810,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       users.forEach(u => {
         const meta = u.user_metadata || {};
         const role = meta.role || 'READER';
-        const roleColor = role === 'ADMIN' ? 'var(--destructive)' : (role === 'ADMIN' ? 'var(--primary)' : 'var(--muted-foreground)');
+        const roleColor = (role === 'SUPER_ADMIN') ? 'var(--destructive)' : (role === 'ADMIN' ? 'var(--primary)' : 'var(--muted-foreground)');
         
         listBody.innerHTML += `
           <tr style="border-bottom: 1px solid var(--border);">
@@ -1290,7 +1290,7 @@ function setupHomeManagement(supabase, currentUserRole) {
 
     if (!supabase || !container) return;
 
-    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'ADMIN');
+    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
     if (isAdmin && uploadContainer) {
       uploadContainer.style.display = 'flex';
     }
@@ -1475,7 +1475,7 @@ function setupHomeManagement(supabase, currentUserRole) {
 
     if (!supabase) return;
 
-    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'ADMIN');
+    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
     if (isAdmin && aboutAdminActions) {
       aboutAdminActions.style.display = 'flex';
     }
@@ -1592,7 +1592,7 @@ function setupHomeManagement(supabase, currentUserRole) {
       <div class="chroma-fade"></div>
     `;
 
-    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'ADMIN');
+    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
     if (isAdmin && btnAddCollab) {
       btnAddCollab.style.display = 'flex';
     }

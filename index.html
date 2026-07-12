@@ -379,7 +379,8 @@
           <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Rôle d'accès</label>
           <select id="new-user-role" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem; background: var(--background);">
             <option value="READER">LECTEUR (Consultation uniquement)</option>
-            <option value="ADMIN">ADMIN (Gestion totale)</option>
+            <option value="ADMIN">ADMIN (Gestion des contenus)</option>
+            <option value="SUPER_ADMIN">SUPER_ADMIN (Contrôle total)</option>
           </select>
         </div>
         <button type="submit" class="btn btn-primary" id="btn-submit-create-user" style="width: 100%; padding: 0.85rem;">Créer le compte</button>
@@ -415,7 +416,8 @@
           <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--muted-foreground);">Rôle d'accès</label>
           <select id="edit-user-role" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95rem; background: var(--background);">
             <option value="READER">LECTEUR (Consultation uniquement)</option>
-            <option value="ADMIN">ADMIN (Gestion totale)</option>
+            <option value="ADMIN">ADMIN (Gestion des contenus)</option>
+            <option value="SUPER_ADMIN">SUPER_ADMIN (Contrôle total)</option>
           </select>
         </div>
         <button type="submit" class="btn btn-primary" id="btn-submit-edit-user" style="width: 100%; padding: 0.85rem;">Mettre à jour le compte</button>
