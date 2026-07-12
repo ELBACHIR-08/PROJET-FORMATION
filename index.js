@@ -243,14 +243,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // LineSidebar interactive effect
-  const lineSidebar = document.getElementById('sidebar-verticals');
-  if (lineSidebar) {
-    const items = lineSidebar.querySelectorAll('.line-sidebar-item');
+  // LineSidebar interactive effect (globally applied to sidebar)
+  const sidebarNavContainer = document.querySelector('.sidebar');
+  if (sidebarNavContainer) {
+    const items = sidebarNavContainer.querySelectorAll('.line-sidebar-item');
     const maxShift = 20;
     const proximityRadius = 120;
 
-    lineSidebar.addEventListener('mousemove', (e) => {
+    sidebarNavContainer.addEventListener('mousemove', (e) => {
       const mouseY = e.clientY;
 
       items.forEach((item) => {
@@ -264,14 +264,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           const shift = ratio * ratio * maxShift;
           item.style.transform = `translateX(${shift}px)`;
         } else {
-          item.style.transform = `translateX(0px)`;
+          item.style.transform = `translateX(0)`;
         }
       });
     });
 
-    lineSidebar.addEventListener('mouseleave', () => {
-      items.forEach((item) => {
-        item.style.transform = `translateX(0px)`;
+    sidebarNavContainer.addEventListener('mouseleave', () => {
+      items.forEach(item => {
+        item.style.transform = `translateX(0)`;
       });
     });
   }
