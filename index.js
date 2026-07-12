@@ -1496,8 +1496,7 @@ function setupHomeManagement(supabase, currentUserRole) {
 
     if (!supabase) return;
 
-    const isAdmin = (currentUserRole === 'ADMIN' || currentUserRole === 'SUPER_ADMIN');
-    if (isAdmin && aboutAdminActions) {
+    if (currentUserRole === 'SUPER_ADMIN' && aboutAdminActions) {
       aboutAdminActions.style.display = 'flex';
     }
 
@@ -1562,6 +1561,11 @@ function setupHomeManagement(supabase, currentUserRole) {
 
   if (btnSaveAbout && aboutDisplayMode && aboutEditMode) {
     btnSaveAbout.addEventListener('click', async () => {
+      if (currentUserRole !== 'SUPER_ADMIN') {
+        alert("Action non autorisée. Seul le Super Administrateur peut modifier cette section.");
+        return;
+      }
+      
       const newTitle = document.getElementById('about-title-input').value.trim();
       const newText = window.quillAbout ? window.quillAbout.root.innerHTML : '';
 
@@ -1584,6 +1588,11 @@ function setupHomeManagement(supabase, currentUserRole) {
 
   if (btnDeleteAbout) {
     btnDeleteAbout.addEventListener('click', async () => {
+      if (currentUserRole !== 'SUPER_ADMIN') {
+        alert("Action non autorisée. Seul le Super Administrateur peut supprimer cette section.");
+        return;
+      }
+      
       if (!confirm("Voulez-vous vraiment supprimer le texte descriptif ?")) return;
 
       try {
