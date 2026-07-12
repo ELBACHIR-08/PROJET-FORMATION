@@ -319,14 +319,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Sidebar Logo click
-  const btnSidebarLogo = document.getElementById('btn-sidebar-logo');
-  if (btnSidebarLogo) {
-    btnSidebarLogo.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigateToHome();
-    });
-  }
 
   // Welcome page banner launch button click
   const btnWelcomeLaunchWiki = document.getElementById('btn-welcome-launch-wiki');
