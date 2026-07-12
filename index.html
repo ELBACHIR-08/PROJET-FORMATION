@@ -62,6 +62,16 @@
         </a>
       </nav>
     </div>
+    
+    <div class="sidebar-menu-group" style="margin-top: 1.5rem;">
+      <h3 class="menu-heading">PLATEFORME</h3>
+      <nav class="line-sidebar">
+        <a href="/about" class="line-sidebar-item" id="btn-nav-about">
+          <span class="line-sidebar-marker"></span>
+          À propos
+        </a>
+      </nav>
+    </div>
 
     <div class="sidebar-user" id="btn-open-profile" style="cursor: pointer; transition: background 0.2s; border-radius: 8px;" onmouseover="this.style.background='rgba(0,0,0,0.03)'" onmouseout="this.style.background='transparent'">
       <div class="user-avatar" id="sidebar-user-avatar">JD</div>
@@ -162,39 +172,6 @@
           </div>
         </div>
 
-        <!-- À propos de Digital Virgo Sénégal -->
-        <div class="about-section" style="margin-bottom: 3rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.02); position: relative;">
-          <div id="about-display-mode">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <h3 id="about-title-display" style="font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--foreground); display: flex; align-items: center; gap: 0.5rem;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                À propos de Digital Virgo Sénégal
-              </h3>
-              <div id="about-admin-actions" style="display: none; gap: 0.5rem;">
-                <button id="btn-edit-about" style="border: 1px solid var(--border); background: var(--card); color: var(--foreground); font-size: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Modifier</button>
-                <button id="btn-delete-about" style="border: none; background: var(--destructive); color: white; font-size: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Supprimer le texte</button>
-              </div>
-            </div>
-            <div id="about-text-display" class="ql-editor" style="font-size: 0.95rem; color: var(--foreground); line-height: 1.7; margin: 0; white-space: pre-wrap; font-family: inherit; padding: 0;">
-              Digital Virgo est l’un des principaux spécialistes mondiaux du commerce mobile (Mobile Commerce). Au Sénégal, nos équipes collaborent étroitement avec les opérateurs de télécommunications pour déployer des solutions de monétisation, de divertissement, et de fidélisation innovantes. Ce portail de gestion des connaissances centralise l'intelligence collective de nos verticales opérationnelles (Live, Loyalty, Content, Pass) pour optimiser nos performances au quotidien.
-            </div>
-          </div>
-          <div id="about-edit-mode" style="display: none;">
-            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--foreground);">Modifier la section À propos</h3>
-            <div style="margin-bottom: 1.25rem;">
-              <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--foreground);">Titre</label>
-              <input type="text" id="about-title-input" style="width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; background: var(--background); color: var(--foreground); font-family: inherit; font-size: 0.95rem;">
-            </div>
-            <div style="margin-bottom: 1.5rem;">
-              <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--foreground);">Texte descriptif</label>
-              <div id="about-editor-container" style="height: 200px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; background: var(--background); color: var(--foreground); font-family: inherit; font-size: 0.95rem;"></div>
-            </div>
-            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-              <button id="btn-cancel-about" style="border: 1px solid var(--border); background: var(--card); color: var(--foreground); font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: 600;">Annuler</button>
-              <button id="btn-save-about" style="border: none; background: var(--primary); color: white; font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Enregistrer</button>
-            </div>
-          </div>
-        </div>
 
         <!-- Présentation des collaborateurs -->
         <div class="team-members-section" style="margin-bottom: 2rem;">
@@ -264,6 +241,43 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
               </button>
             </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: A Propos -->
+      <div id="about-view" style="display: none;">
+        <!-- À propos de Digital Virgo Sénégal -->
+        <div class="about-section" style="margin-bottom: 3rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.02); position: relative;">
+          <div id="about-display-mode">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h3 id="about-title-display" style="font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--foreground); display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                À propos de Digital Virgo Sénégal
+              </h3>
+              <div id="about-admin-actions" style="display: none; gap: 0.5rem;">
+                <button id="btn-edit-about" style="border: 1px solid var(--border); background: var(--card); color: var(--foreground); font-size: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Modifier</button>
+                <button id="btn-delete-about" style="border: none; background: var(--destructive); color: white; font-size: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Supprimer le texte</button>
+              </div>
+            </div>
+            <div id="about-text-display" class="ql-editor" style="font-size: 0.95rem; color: var(--foreground); line-height: 1.7; margin: 0; white-space: pre-wrap; font-family: inherit; padding: 0;">
+              Digital Virgo est l’un des principaux spécialistes mondiaux du commerce mobile (Mobile Commerce). Au Sénégal, nos équipes collaborent étroitement avec les opérateurs de télécommunications pour déployer des solutions de monétisation, de divertissement, et de fidélisation innovantes. Ce portail de gestion des connaissances centralise l'intelligence collective de nos verticales opérationnelles (Live, Loyalty, Content, Pass) pour optimiser nos performances au quotidien.
+            </div>
+          </div>
+          <div id="about-edit-mode" style="display: none;">
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--foreground);">Modifier la section À propos</h3>
+            <div style="margin-bottom: 1.25rem;">
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--foreground);">Titre</label>
+              <input type="text" id="about-title-input" style="width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; background: var(--background); color: var(--foreground); font-family: inherit; font-size: 0.95rem;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--foreground);">Texte descriptif</label>
+              <div id="about-editor-container" style="height: 200px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; background: var(--background); color: var(--foreground); font-family: inherit; font-size: 0.95rem;"></div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+              <button id="btn-cancel-about" style="border: 1px solid var(--border); background: var(--card); color: var(--foreground); font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: 600;">Annuler</button>
+              <button id="btn-save-about" style="border: none; background: var(--primary); color: white; font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;">Enregistrer</button>
+            </div>
           </div>
         </div>
       </div>

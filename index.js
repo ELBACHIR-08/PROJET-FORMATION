@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const dashboardView = document.getElementById('dashboard-view');
   const parcoursView = document.getElementById('parcours-view');
   const adminView = document.getElementById('admin-view');
+  const aboutView = document.getElementById('about-view');
   const btnBackOperator = document.getElementById('btn-back-operator');
   const btnBackDashboard = document.getElementById('btn-back-dashboard');
   const operatorsGrid = document.getElementById('operators-grid');
@@ -131,6 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (dashboardView) dashboardView.style.display = 'none';
     if (parcoursView) parcoursView.style.display = 'none';
     if (adminView) adminView.style.display = 'none';
+    if (aboutView) aboutView.style.display = 'none';
     
     // Clear sidebar active states
     document.querySelectorAll('#sidebar-verticals .line-sidebar-item').forEach(n => n.classList.remove('active'));
@@ -153,6 +155,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         adminView.style.display = 'block';
         loadAdminUsers();
       }
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    if (cleanPath === '/about') {
+      if (aboutView) aboutView.style.display = 'block';
       window.scrollTo(0, 0);
       return;
     }
@@ -293,6 +301,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (btnGotoAdmin) {
     btnGotoAdmin.addEventListener('click', () => {
       navigateTo('/admin');
+    });
+  }
+
+  // Go to About page click
+  const btnNavAbout = document.getElementById('btn-nav-about');
+  if (btnNavAbout) {
+    btnNavAbout.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo('/about');
+      if (window.innerWidth <= 768 && sidebar) {
+        sidebar.classList.remove('open');
+        if (sidebarOverlay) sidebarOverlay.classList.remove('show');
+      }
     });
   }
 
